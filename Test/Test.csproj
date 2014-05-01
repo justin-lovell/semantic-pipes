@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PipePackageOptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SemanticRegistryTests.cs" />
   </ItemGroup>
