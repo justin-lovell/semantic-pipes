@@ -39,7 +39,7 @@
     <Compile Include="InternalsVisibleToAssemblyAttribute.cs" />
     <Compile Include="IPipeExtension.cs" />
     <Compile Include="ISemanticRegistry.cs" />
-    <Compile Include="PipePackageOption.cs" />
+    <Compile Include="PipeOutputPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SemanticRegistry.cs" />
   </ItemGroup>

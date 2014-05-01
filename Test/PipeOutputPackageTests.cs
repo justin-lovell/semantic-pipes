@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace SemanticPipes
 {
     [TestFixture]
-    public class PipePackageOptionTests
+    public class PipeOutputPackageTests
     {
         [Test]
         public void Ctor_WhenNullToOutputTypeParameter_ItShouldThrowArgumentNullExcpetion()
@@ -12,7 +12,7 @@ namespace SemanticPipes
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
                 Func<object, object> processCallbackFunc = input => null;
-                var pipePackageOption = new PipePackageOption(null, processCallbackFunc);
+                var pipePackageOption = new PipeOutputPackage(null, processCallbackFunc);
 
                 Assert.Fail();
             });
@@ -25,7 +25,7 @@ namespace SemanticPipes
         {
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
-                var pipePackageOption = new PipePackageOption(typeof (string), null);
+                var pipePackageOption = new PipeOutputPackage(typeof (string), null);
                 Assert.Fail();
             });
 
@@ -36,7 +36,7 @@ namespace SemanticPipes
         public void ProcessInput_WhenNullToInputParameter_ItShouldThrowArgumentNullException()
         {
             Func<object, object> processCallbackFunc = input => null;
-            var pipePackageOption = new PipePackageOption(typeof (string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof (string), processCallbackFunc);
 
             var argumentNullException = Assert.Throws<ArgumentNullException>(() => pipePackageOption.ProcessInput(null));
 
@@ -47,7 +47,7 @@ namespace SemanticPipes
         public void ProcessInput_WhenProcesCallbackEchoesInput_ItShouldReturnTheInput()
         {
             Func<object, object> processCallbackFunc = input => input;
-            var pipePackageOption = new PipePackageOption(typeof (string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof (string), processCallbackFunc);
 
             var output = pipePackageOption.ProcessInput("abc");
 
@@ -58,7 +58,7 @@ namespace SemanticPipes
         public void ProcessInput_WhenProcesCallbackReturnsWhatIsNotTheExpectedOutputType_ItShouldThrowNotSupportedException()
         {
             Func<object, object> processCallbackFunc = input => 2;
-            var pipePackageOption = new PipePackageOption(typeof(string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof(string), processCallbackFunc);
 
             Assert.Throws<NotSupportedException>(() => pipePackageOption.ProcessInput("abc"));
         }
@@ -67,7 +67,7 @@ namespace SemanticPipes
         public void ProcessInput_WhenProcesCallbackReturnsNull_ItShouldThrowNotSupportedException()
         {
             Func<object, object> processCallbackFunc = input => null;
-            var pipePackageOption = new PipePackageOption(typeof (string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof (string), processCallbackFunc);
 
             Assert.Throws<NotSupportedException>(() => pipePackageOption.ProcessInput("abc"));
         }

@@ -12,7 +12,7 @@ namespace SemanticPipes
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<PipePackageOption> PipeFrom(Type sourceType)
+        public IEnumerable<PipeOutputPackage> PipeFrom(Type sourceType)
         {
             throw new NotImplementedException();
         }

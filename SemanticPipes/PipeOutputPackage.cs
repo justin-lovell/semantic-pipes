@@ -2,11 +2,11 @@
 
 namespace SemanticPipes
 {
-    public class PipePackageOption
+    public class PipeOutputPackage
     {
         private readonly Func<object, object> _processCallbackFunc;
 
-        public PipePackageOption(Type outputType, Func<object, object> processCallbackFunc)
+        public PipeOutputPackage(Type outputType, Func<object, object> processCallbackFunc)
         {
             if (outputType == null) throw new ArgumentNullException("outputType");
             if (processCallbackFunc == null) throw new ArgumentNullException("processCallbackFunc");

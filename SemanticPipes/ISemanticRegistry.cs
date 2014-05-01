@@ -7,6 +7,6 @@ namespace SemanticPipes
     public interface ISemanticRegistry
     {
         void Install(IPipeExtension extension);
-        IEnumerable<PipePackageOption> PipeFrom(Type sourceType);
+        IEnumerable<PipeOutputPackage> PipeFrom(Type sourceType);
     }
 }
