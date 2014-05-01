@@ -25,7 +25,7 @@ namespace SemanticPipes
 
         private static IEnumerable<PipeOutputPackage> ExtractValidOutputPackages(Type sourceType, IPipeExtension pipeExtension)
         {
-            return pipeExtension.PipeFrom(sourceType);
+            return pipeExtension.PipeFrom(sourceType).Where(package => package.InputType == sourceType);
         }
     }
 }
