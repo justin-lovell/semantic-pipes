@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="PipeOutputPackageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SemanticBrokerTests.cs" />
     <Compile Include="SemanticPipelineSolverTests.cs" />
     <Compile Include="SemanticRegistryTests.cs" />
   </ItemGroup>
