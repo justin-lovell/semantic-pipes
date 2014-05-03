@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SemanticPipes
 {
-    class SemanticPipelineSolver
+    internal sealed class SemanticPipelineSolver
     {
         private readonly List<ISemanticRegistry> _registries = new List<ISemanticRegistry>();
 
