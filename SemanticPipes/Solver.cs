@@ -8,16 +8,6 @@ namespace SemanticPipes
     {
         private readonly List<IPipeExtension> _pipeExtensions = new List<IPipeExtension>(); 
 
-        public void AppendRegistry(ISemanticRegistry registry)
-        {
-            if (registry == null) throw new ArgumentNullException("registry");
-
-            foreach (var exposeAllPipeExtension in registry.ExposeAllPipeExtensions())
-            {
-                Install(exposeAllPipeExtension);
-            }
-        }
-
         public void Install(IPipeExtension pipeExtension)
         {
             if (pipeExtension == null) throw new ArgumentNullException("pipeExtension");

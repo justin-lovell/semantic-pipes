@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using FakeItEasy;
 using NUnit.Framework;
 
@@ -61,28 +59,27 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void AppendRegistry_WhenNullToRegistryParameter_ItShouldThrowArgumentNullExcpetion()
+        public void Install_WhenNullToPipeExtensionParameter_ItShouldThrowArgumentNullException()
         {
             var solver = new Solver();
 
-            var argumentNullException = Assert.Throws<ArgumentNullException>(() => solver.AppendRegistry(null));
-
-            Assert.AreEqual("registry", argumentNullException.ParamName);
+            var argumentNullException = Assert.Throws<ArgumentNullException>(() => solver.Install(null));
+            Assert.AreEqual("pipeExtension", argumentNullException.ParamName);
         }
 
         [Test]
-        public void AppendRegistry_WhenValidInstanceIsPassedIn_ItShouldAcceptIt()
+        public void Install_WhenValidInstanceIsPassedIn_ItShouldAcceptIt()
         {
             var solver = new Solver();
-            var registry = A.Fake<ISemanticRegistry>();
+            var pipeExtension = A.Fake<IPipeExtension>();
 
-            A.CallTo(() => registry.PipeFrom(typeof (string))).Returns(null);
+            A.CallTo(() => pipeExtension.PipeFrom(typeof (string))).Returns(null);
 
-            solver.AppendRegistry(registry);
+            solver.Install(pipeExtension);
         }
 
         [Test]
-        public void SolveAsPipePackage_WhenNoRegistryHasBeenAppended_ItShouldThrowNotSupportedExcpetion()
+        public void SolveAsPipePackage_WhenNoPipeExtensionsHasBeenInstalled_ItShouldThrowNotSupportedExcpetion()
         {
             var solver = new Solver();
 
@@ -112,6 +109,30 @@ namespace SemanticPipes
         }
 
         [Test]
+        public void SolveAsPipePackage_WhenPipelinePackagesReturnInvalidPackages_ItShouldOnlyReturnTheApplicablePackages
+            ()
+        {
+            var solver = new Solver();
+
+            var stringPipeline = A.Fake<IPipeExtension>();
+            var int32Pipeline = A.Fake<IPipeExtension>();
+
+            var stringOutputPackage = new PipeOutputPackage(typeof (string), typeof (string), o => "incorrect package");
+            var int32OutputPackage = new PipeOutputPackage(typeof (int), typeof (string), o => "correct");
+
+            A.CallTo(() => stringPipeline.PipeFrom(typeof (string))).Returns(new[] {stringOutputPackage});
+            A.CallTo(() => int32Pipeline.PipeFrom(typeof (int))).Returns(new[] {int32OutputPackage});
+
+            solver.Install(stringPipeline);
+            solver.Install(int32Pipeline);
+
+            PipeOutputPackage solvedPackage = solver.SolveAsPipePackage(typeof (int), typeof (string));
+            object processedOutput = solvedPackage.ProcessInput(123);
+
+            Assert.AreEqual("correct", processedOutput);
+        }
+
+        [Test]
         public void
             SolveAsPipePackage_WhenTheInputAndOutputPairCanBeResolved_ItShouldReturnCorrespondingPipeOutputPackage()
         {
@@ -131,38 +152,6 @@ namespace SemanticPipes
 
 
             Assert.AreSame(expectedPackage, solvedPackage);
-        }
-
-        [Test]
-        public void SolveAsPipePackage_WhenPipelinePackagesReturnInvalidPackages_ItShouldOnlyReturnTheApplicablePackages()
-        {
-            var solver = new Solver();
-
-            var stringPipeline = A.Fake<IPipeExtension>();
-            var int32Pipeline = A.Fake<IPipeExtension>();
-
-            var stringOutputPackage = new PipeOutputPackage(typeof(string), typeof(string), o => "incorrect package");
-            var int32OutputPackage = new PipeOutputPackage(typeof(int), typeof(string), o => "correct");
-
-            A.CallTo(() => stringPipeline.PipeFrom(typeof(string))).Returns(new[] { stringOutputPackage });
-            A.CallTo(() => int32Pipeline.PipeFrom(typeof(int))).Returns(new[] { int32OutputPackage });
-
-            solver.Install(stringPipeline);
-            solver.Install(int32Pipeline);
-
-            var solvedPackage = solver.SolveAsPipePackage(typeof(int), typeof(string));
-            object processedOutput = solvedPackage.ProcessInput(123);
-
-            Assert.AreEqual("correct", processedOutput);
-        }
-
-        [Test]
-        public void Install_WhenNullToPipeExtensionParameter_ItShouldThrowArgumentNullException()
-        {
-            var solver = new Solver();
-
-            var argumentNullException = Assert.Throws<ArgumentNullException>(() => solver.Install(null));
-            Assert.AreEqual("pipeExtension", argumentNullException.ParamName);
         }
     }
 }

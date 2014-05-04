@@ -14,11 +14,6 @@ namespace SemanticPipes
             return new SolvingPipe<TSource>(_solver, source);
         }
 
-        internal void AppendRegistry(ISemanticRegistry registry)
-        {
-            _solver.AppendRegistry(registry);
-        }
-
         private class SolvingPipe<TSource> : ISemanticOpenPipe
         {
             private readonly Solver _solver;
