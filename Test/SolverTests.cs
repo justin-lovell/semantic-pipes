@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace SemanticPipes
 {
     [TestFixture]
-    public class SemanticPipelineSolverTests
+    public class SolverTests
     {
         [TestCase(typeof (string), typeof (int))]
         [TestCase(typeof (int), typeof (string))]
@@ -16,7 +16,7 @@ namespace SemanticPipes
             // the pipe from below is deliberate as to try ensure no confusion goes through
             A.CallTo(() => registry.PipeFrom(typeof (string))).Returns(null);
 
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
             solver.AppendRegistry(registry);
 
             var notImplementedException =
@@ -46,7 +46,7 @@ namespace SemanticPipes
             var registry = A.Fake<ISemanticRegistry>();
             A.CallTo(() => registry.PipeFrom(solveToInputType)).Returns(new[] { expectedPackage });
 
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
             solver.AppendRegistry(registry);
 
             var notImplementedException =
@@ -62,7 +62,7 @@ namespace SemanticPipes
         [Test]
         public void AppendRegistry_WhenNullToRegistryParameter_ItShouldThrowArgumentNullExcpetion()
         {
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
 
             var argumentNullException = Assert.Throws<ArgumentNullException>(() => solver.AppendRegistry(null));
 
@@ -72,7 +72,7 @@ namespace SemanticPipes
         [Test]
         public void AppendRegistry_WhenValidInstanceIsPassedIn_ItShouldAcceptIt()
         {
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
             var registry = A.Fake<ISemanticRegistry>();
 
             A.CallTo(() => registry.PipeFrom(typeof (string))).Returns(null);
@@ -83,7 +83,7 @@ namespace SemanticPipes
         [Test]
         public void SolveAsPipePackage_WhenNoRegistryHasBeenAppended_ItShouldThrowNotSupportedExcpetion()
         {
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
 
             Assert.Throws<NotSupportedException>(() => solver.SolveAsPipePackage(typeof (string), typeof (string)));
         }
@@ -91,7 +91,7 @@ namespace SemanticPipes
         [Test]
         public void SolveAsPipePackage_WhenNullToInputTypeParameter_ItShouldThrowArgumentNullException()
         {
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
 
             var argumentNullException =
                 Assert.Throws<ArgumentNullException>(() => solver.SolveAsPipePackage(null, typeof (string)));
@@ -102,7 +102,7 @@ namespace SemanticPipes
         [Test]
         public void SolveAsPipePackage_WhenNullToOutputTypeParameter_ItShouldThrowArgumentNullException()
         {
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
 
             var argumentNullException =
                 Assert.Throws<ArgumentNullException>(() => solver.SolveAsPipePackage(typeof (string), null));
@@ -122,7 +122,7 @@ namespace SemanticPipes
             var registry = A.Fake<ISemanticRegistry>();
             A.CallTo(() => registry.PipeFrom(inputType)).Returns(new[] {expectedPackage});
 
-            var solver = new SemanticPipelineSolver();
+            var solver = new Solver();
             solver.AppendRegistry(registry);
 
 

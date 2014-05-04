@@ -4,7 +4,7 @@ namespace SemanticPipes
 {
     public sealed class SemanticBroker : ISemanticBroker
     {
-        private readonly SemanticPipelineSolver _solver = new SemanticPipelineSolver();
+        private readonly Solver _solver = new Solver();
 
         public ISemanticOpenPipe On<TSource>(TSource source)
             where TSource : class
@@ -21,10 +21,10 @@ namespace SemanticPipes
 
         private class SolvingPipe<TSource> : ISemanticOpenPipe
         {
-            private readonly SemanticPipelineSolver _solver;
+            private readonly Solver _solver;
             private readonly object _source;
 
-            public SolvingPipe(SemanticPipelineSolver solver, object source)
+            public SolvingPipe(Solver solver, object source)
             {
                 _solver = solver;
                 _source = source;
