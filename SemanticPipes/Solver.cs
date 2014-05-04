@@ -6,13 +6,22 @@ namespace SemanticPipes
 {
     internal sealed class Solver
     {
-        private readonly List<ISemanticRegistry> _registries = new List<ISemanticRegistry>();
+        private readonly List<IPipeExtension> _pipeExtensions = new List<IPipeExtension>(); 
 
         public void AppendRegistry(ISemanticRegistry registry)
         {
             if (registry == null) throw new ArgumentNullException("registry");
 
-            _registries.Add(registry);
+            foreach (var exposeAllPipeExtension in registry.ExposeAllPipeExtensions())
+            {
+                Install(exposeAllPipeExtension);
+            }
+        }
+
+        public void Install(IPipeExtension pipeExtension)
+        {
+            if (pipeExtension == null) throw new ArgumentNullException("pipeExtension");
+            _pipeExtensions.Add(pipeExtension);
         }
 
         public PipeOutputPackage SolveAsPipePackage(Type inputType, Type outputType)
@@ -20,14 +29,15 @@ namespace SemanticPipes
             if (inputType == null) throw new ArgumentNullException("inputType");
             if (outputType == null) throw new ArgumentNullException("outputType");
 
-            GuardAgainstOperationsWithNoRegistriesAppended();
+            GuardAgainstOperationsWithNoPipePackagesInstalled();
 
             var solvedPackage =
-                (from registry in _registries
-                    let packages = registry.PipeFrom(inputType)
-                    where packages != null
-                    from package in packages
-                    where DoesPackageMatchInputAndOutput(package, inputType, outputType)
+                (from pipeExtension in _pipeExtensions
+                    let pipeOutputPackages = pipeExtension.PipeFrom(inputType)
+                    where pipeOutputPackages != null
+                    from package in pipeOutputPackages
+                    where package != null
+                          && DoesPackageMatchInputAndOutput(package, inputType, outputType)
                     select package).FirstOrDefault();
 
             GuardAgainstUnsolveableInputOutputResolution(inputType, outputType, solvedPackage);
@@ -50,10 +60,10 @@ namespace SemanticPipes
             throw new NotImplementedException(message);
         }
 
-        private void GuardAgainstOperationsWithNoRegistriesAppended()
+        private void GuardAgainstOperationsWithNoPipePackagesInstalled()
         {
-            if (_registries.Count != 0) return;
-            throw new NotSupportedException("No registries have been appended");
+            if (_pipeExtensions.Count != 0) return;
+            throw new NotSupportedException("No IPipePackage have been installed");
         }
     }
 }

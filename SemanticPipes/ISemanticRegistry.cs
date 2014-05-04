@@ -8,5 +8,6 @@ namespace SemanticPipes
     {
         void Install(IPipeExtension extension);
         IEnumerable<PipeOutputPackage> PipeFrom(Type sourceType);
+        IEnumerable<IPipeExtension> ExposeAllPipeExtensions();
     }
 }

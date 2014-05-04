@@ -38,5 +38,10 @@ namespace SemanticPipes
                 return (TDestination) processedOutput;
             }
         }
+
+        internal void Install(IPipeExtension pipeExtension)
+        {
+            _solver.Install(pipeExtension);
+        }
     }
 }

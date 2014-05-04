@@ -23,6 +23,11 @@ namespace SemanticPipes
             return pipeExtensions.SelectMany(pipeExtension => ExtractValidOutputPackages(sourceType, pipeExtension));
         }
 
+        public IEnumerable<IPipeExtension> ExposeAllPipeExtensions()
+        {
+            return _pipeExtensions;
+        }
+
         private static IEnumerable<PipeOutputPackage> ExtractValidOutputPackages(Type sourceType, IPipeExtension pipeExtension)
         {
             return pipeExtension.PipeFrom(sourceType).Where(package => package.InputType == sourceType);

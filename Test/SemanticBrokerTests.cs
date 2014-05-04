@@ -27,11 +27,11 @@ namespace SemanticPipes
 
             var expectedPackage = new PipeOutputPackage(inputType, outputType, o => expectedOutputObject);
 
-            var registry = A.Fake<ISemanticRegistry>();
-            A.CallTo(() => registry.PipeFrom(inputType)).Returns(new[] { expectedPackage });
+            var pipeExtension = A.Fake<IPipeExtension>();
+            A.CallTo(() => pipeExtension.PipeFrom(inputType)).Returns(new[] {expectedPackage});
 
             var broker = new SemanticBroker();
-            broker.AppendRegistry(registry);
+            broker.Install(pipeExtension);
 
 
             var actualOutputObject = broker.On(new TestObjectA()).Output<TestObjectB>();
