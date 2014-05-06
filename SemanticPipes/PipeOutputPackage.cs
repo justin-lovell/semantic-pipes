@@ -54,7 +54,7 @@ namespace SemanticPipes
             string message =
                 string.Format("Expected an output of type '{0}'. Instead, we got an object of type of '{1}'.",
                     OutputType, outputType);
-            throw new NotSupportedException(message);
+            throw new UnexpectedPipePackageOperationException(message);
         }
 
         private static void GuardAgainstNullResultFromCallback(object output)

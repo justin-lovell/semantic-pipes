@@ -47,7 +47,7 @@ namespace SemanticPipes
 
             string message = string.Format("The input type '{0}' could not be resolved to output a type of {1}",
                 inputType, outputType);
-            throw new NotImplementedException(message);
+            throw new CannotResolveSemanticException(message);
         }
 
         private void GuardAgainstOperationsWithNoPipePackagesInstalled()

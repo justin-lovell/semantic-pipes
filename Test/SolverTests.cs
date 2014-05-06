@@ -9,7 +9,8 @@ namespace SemanticPipes
     {
         [TestCase(typeof (string), typeof (int))]
         [TestCase(typeof (int), typeof (string))]
-        public void SolveAsPipePackage_WhenTheInputAndOutputPairCannotBeResolved_ItShouldThrowNotImplementedExcpetion(
+        public void
+            SolveAsPipePackage_WhenTheInputAndOutputPairCannotBeResolved_ItShouldThrowCannotResolveSemanticException(
             Type inputType, Type outputType)
         {
             var pipeExtension = A.Fake<IPipeExtension>();
@@ -18,13 +19,13 @@ namespace SemanticPipes
             var solver = new Solver();
             solver.Install(pipeExtension);
 
-            var notImplementedException =
-                Assert.Throws<NotImplementedException>(() => solver.SolveAsPipePackage(inputType, outputType));
+            var cannotResolveSemanticException =
+                Assert.Throws<CannotResolveSemanticException>(() => solver.SolveAsPipePackage(inputType, outputType));
 
             string expectedExceptionMessage =
                 string.Format("The input type '{0}' could not be resolved to output a type of {1}",
                     inputType, outputType);
-            Assert.AreEqual(expectedExceptionMessage, notImplementedException.Message);
+            Assert.AreEqual(expectedExceptionMessage, cannotResolveSemanticException.Message);
         }
 
         [TestCase(typeof (string), typeof (int))]
@@ -48,14 +49,14 @@ namespace SemanticPipes
             var solver = new Solver();
             solver.Install(pipeExtension);
 
-            var notImplementedException =
-                Assert.Throws<NotImplementedException>(
+            var cannotResolveSemanticException =
+                Assert.Throws<CannotResolveSemanticException>(
                     () => solver.SolveAsPipePackage(solveToInputType, solveToOutputType));
 
             string expectedExceptionMessage =
                 string.Format("The input type '{0}' could not be resolved to output a type of {1}",
                     solveToInputType, solveToOutputType);
-            Assert.AreEqual(expectedExceptionMessage, notImplementedException.Message);
+            Assert.AreEqual(expectedExceptionMessage, cannotResolveSemanticException.Message);
         }
 
         [Test]

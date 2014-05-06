@@ -38,6 +38,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CannotResolveSemanticException.cs" />
     <Compile Include="InternalsVisibleToAssemblyAttribute.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />
     <Compile Include="IPipeExtension.cs" />
