@@ -53,7 +53,7 @@ namespace SemanticPipes
         private void GuardAgainstOperationsWithNoPipePackagesInstalled()
         {
             if (_pipeExtensions.Count != 0) return;
-            throw new NotSupportedException("No IPipePackage have been installed");
+            throw new InvalidRegistryConfigurationException("No IPipePackage have been installed");
         }
     }
 }

@@ -79,21 +79,21 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void ProcessInput_WhenProcesCallbackReturnsWhatIsNotTheExpectedOutputType_ItShouldThrowNotSupportedException()
+        public void ProcessInput_WhenProcesCallbackReturnsWhatIsNotTheExpectedOutputType_ItShouldThrowUnexpectedPipePackageOperationException()
         {
             Func<object, object> processCallbackFunc = input => 2;
             var pipePackageOption = new PipeOutputPackage(typeof(string), typeof(string), processCallbackFunc);
 
-            Assert.Throws<NotSupportedException>(() => pipePackageOption.ProcessInput("abc"));
+            Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc"));
         }
 
         [Test]
-        public void ProcessInput_WhenProcesCallbackReturnsNull_ItShouldThrowNotSupportedException()
+        public void ProcessInput_WhenProcesCallbackReturnsNull_ItShouldThrowUnexpectedPipePackageOperationException()
         {
             Func<object, object> processCallbackFunc = input => null;
             var pipePackageOption = new PipeOutputPackage(typeof(string), typeof (string), processCallbackFunc);
 
-            Assert.Throws<NotSupportedException>(() => pipePackageOption.ProcessInput("abc"));
+            Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc"));
         }
     }
 }

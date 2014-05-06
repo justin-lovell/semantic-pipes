@@ -62,7 +62,7 @@ namespace SemanticPipes
             if (output != null) return;
 
             const string message = "The output of the process callback returned null. We expected a non-null object.";
-            throw new NotSupportedException(message);
+            throw new UnexpectedPipePackageOperationException(message);
         }
     }
 }
