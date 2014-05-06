@@ -30,7 +30,7 @@ namespace SemanticPipes
 
         [TestCase(typeof (string), typeof (int))]
         [TestCase(typeof (int), typeof (string))]
-        public void SolveAsPipePackage_WhenSearchingForAnInputOutputPair_ItShouldGuardAgainstInvalidPackageCombinations(
+        public void SolveAsPipePackage_WhenEitherInputOutputPairCannot_ItShouldThrowCannotResolveSemanticException(
             Type solveToInputType, Type solveToOutputType)
         {
             Type inputType = typeof (string);
