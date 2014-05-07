@@ -80,11 +80,13 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void SolveAsPipePackage_WhenNoPipeExtensionsHasBeenInstalled_ItShouldThrowInvalidRegistryConfigurationException()
+        public void
+            SolveAsPipePackage_WhenNoPipeExtensionsHasBeenInstalled_ItShouldThrowInvalidRegistryConfigurationException()
         {
             var solver = new Solver();
 
-            Assert.Throws<InvalidRegistryConfigurationException>(() => solver.SolveAsPipePackage(typeof(string), typeof(string)));
+            Assert.Throws<InvalidRegistryConfigurationException>(
+                () => solver.SolveAsPipePackage(typeof (string), typeof (string)));
         }
 
         [Test]

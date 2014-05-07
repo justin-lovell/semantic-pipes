@@ -6,7 +6,7 @@ namespace SemanticPipes
 {
     internal sealed class Solver
     {
-        private readonly List<IPipeExtension> _pipeExtensions = new List<IPipeExtension>(); 
+        private readonly List<IPipeExtension> _pipeExtensions = new List<IPipeExtension>();
 
         public void Install(IPipeExtension pipeExtension)
         {
@@ -21,7 +21,7 @@ namespace SemanticPipes
 
             GuardAgainstOperationsWithNoPipePackagesInstalled();
 
-            var solvedPackage =
+            PipeOutputPackage solvedPackage =
                 (from pipeExtension in _pipeExtensions
                     let pipeOutputPackages = pipeExtension.PipeFrom(inputType)
                     where pipeOutputPackages != null

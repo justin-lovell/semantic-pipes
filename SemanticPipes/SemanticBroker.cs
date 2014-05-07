@@ -14,6 +14,11 @@ namespace SemanticPipes
             return new SolvingPipe<TSource>(_solver, source);
         }
 
+        internal void Install(IPipeExtension pipeExtension)
+        {
+            _solver.Install(pipeExtension);
+        }
+
         private class SolvingPipe<TSource> : ISemanticOpenPipe
         {
             private readonly Solver _solver;
@@ -32,11 +37,6 @@ namespace SemanticPipes
 
                 return (TDestination) processedOutput;
             }
-        }
-
-        internal void Install(IPipeExtension pipeExtension)
-        {
-            _solver.Install(pipeExtension);
         }
     }
 }

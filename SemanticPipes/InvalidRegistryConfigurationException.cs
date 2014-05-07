@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace SemanticPipes
 {
-    [System.Serializable]
+    [Serializable]
     public class InvalidRegistryConfigurationException : Exception
     {
         //
@@ -26,7 +26,7 @@ namespace SemanticPipes
         }
 
         protected InvalidRegistryConfigurationException(
-            System.Runtime.Serialization.SerializationInfo info,
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

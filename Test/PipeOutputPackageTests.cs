@@ -12,7 +12,7 @@ namespace SemanticPipes
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
                 Func<object, object> processCallbackFunc = input => null;
-                var pipePackageOption = new PipeOutputPackage(null, typeof(string), processCallbackFunc);
+                var pipePackageOption = new PipeOutputPackage(null, typeof (string), processCallbackFunc);
 
                 Assert.Fail();
             });
@@ -26,7 +26,7 @@ namespace SemanticPipes
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
                 Func<object, object> processCallbackFunc = input => null;
-                var pipePackageOption = new PipeOutputPackage(typeof(string), null, processCallbackFunc);
+                var pipePackageOption = new PipeOutputPackage(typeof (string), null, processCallbackFunc);
 
                 Assert.Fail();
             });
@@ -39,7 +39,7 @@ namespace SemanticPipes
         {
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
-                var pipePackageOption = new PipeOutputPackage(typeof(string), typeof (string), null);
+                var pipePackageOption = new PipeOutputPackage(typeof (string), typeof (string), null);
                 Assert.Fail();
             });
 
@@ -47,10 +47,20 @@ namespace SemanticPipes
         }
 
         [Test]
+        public void ProcessInput_WhenInputParameterIsNotTheExpectedType_ItShouldThrowNotArgumentException()
+        {
+            Func<object, object> processCallbackFunc = input => "abc";
+            var pipePackageOption = new PipeOutputPackage(typeof (int), typeof (string), processCallbackFunc);
+
+            var argumentException = Assert.Throws<ArgumentException>(() => pipePackageOption.ProcessInput("abc"));
+            Assert.AreEqual("input", argumentException.ParamName);
+        }
+
+        [Test]
         public void ProcessInput_WhenNullToInputParameter_ItShouldThrowArgumentNullException()
         {
             Func<object, object> processCallbackFunc = input => null;
-            var pipePackageOption = new PipeOutputPackage(typeof(string), typeof (string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof (string), typeof (string), processCallbackFunc);
 
             var argumentNullException = Assert.Throws<ArgumentNullException>(() => pipePackageOption.ProcessInput(null));
 
@@ -61,37 +71,29 @@ namespace SemanticPipes
         public void ProcessInput_WhenProcesCallbackEchoesInput_ItShouldReturnTheInput()
         {
             Func<object, object> processCallbackFunc = input => input;
-            var pipePackageOption = new PipeOutputPackage(typeof(string), typeof (string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof (string), typeof (string), processCallbackFunc);
 
-            var output = pipePackageOption.ProcessInput("abc");
+            object output = pipePackageOption.ProcessInput("abc");
 
             Assert.AreEqual("abc", output);
-        }
-
-        [Test]
-        public void ProcessInput_WhenInputParameterIsNotTheExpectedType_ItShouldThrowNotArgumentException()
-        {
-            Func<object, object> processCallbackFunc = input => "abc";
-            var pipePackageOption = new PipeOutputPackage(typeof(int), typeof(string), processCallbackFunc);
-
-            var argumentException = Assert.Throws<ArgumentException>(() => pipePackageOption.ProcessInput("abc"));
-            Assert.AreEqual("input", argumentException.ParamName);
-        }
-
-        [Test]
-        public void ProcessInput_WhenProcesCallbackReturnsWhatIsNotTheExpectedOutputType_ItShouldThrowUnexpectedPipePackageOperationException()
-        {
-            Func<object, object> processCallbackFunc = input => 2;
-            var pipePackageOption = new PipeOutputPackage(typeof(string), typeof(string), processCallbackFunc);
-
-            Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc"));
         }
 
         [Test]
         public void ProcessInput_WhenProcesCallbackReturnsNull_ItShouldThrowUnexpectedPipePackageOperationException()
         {
             Func<object, object> processCallbackFunc = input => null;
-            var pipePackageOption = new PipeOutputPackage(typeof(string), typeof (string), processCallbackFunc);
+            var pipePackageOption = new PipeOutputPackage(typeof (string), typeof (string), processCallbackFunc);
+
+            Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc"));
+        }
+
+        [Test]
+        public void
+            ProcessInput_WhenProcesCallbackReturnsWhatIsNotTheExpectedOutputType_ItShouldThrowUnexpectedPipePackageOperationException
+            ()
+        {
+            Func<object, object> processCallbackFunc = input => 2;
+            var pipePackageOption = new PipeOutputPackage(typeof (string), typeof (string), processCallbackFunc);
 
             Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc"));
         }

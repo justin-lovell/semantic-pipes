@@ -7,6 +7,14 @@ namespace SemanticPipes
     [TestFixture]
     public class SemanticBrokerTests
     {
+        private class TestObjectA
+        {
+        }
+
+        private class TestObjectB
+        {
+        }
+
         [Test]
         public void On_WhenNullToSourceParameter_ItShouldThrowArgumentNullException()
         {
@@ -21,8 +29,8 @@ namespace SemanticPipes
         {
             var expectedOutputObject = new TestObjectB();
 
-            var inputType = typeof (TestObjectA);
-            var outputType = expectedOutputObject.GetType();
+            Type inputType = typeof (TestObjectA);
+            Type outputType = expectedOutputObject.GetType();
 
 
             var expectedPackage = new PipeOutputPackage(inputType, outputType, o => expectedOutputObject);
@@ -39,8 +47,5 @@ namespace SemanticPipes
 
             Assert.AreSame(expectedOutputObject, actualOutputObject);
         }
-
-        private class TestObjectA { }
-        private class TestObjectB { }
     }
 }
