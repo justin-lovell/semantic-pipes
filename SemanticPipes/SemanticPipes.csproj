@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CannotResolveSemanticException.cs" />
+    <Compile Include="GenericPipeExtension.cs" />
     <Compile Include="InternalsVisibleToAssemblyAttribute.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />
     <Compile Include="IPipeExtension.cs" />
