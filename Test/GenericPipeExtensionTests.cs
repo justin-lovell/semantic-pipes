@@ -63,7 +63,7 @@ namespace SemanticPipes
                 Assert.AreSame(expectedTestClassA, a);
                 return expectedTestClassB;
             };
-            var extension = new GenericPipeExtension<TestClassA, TestClassB>(processCallback);
+            var extension = PipeExtensionFactory.Process(processCallback);
 
             IEnumerable<PipeOutputPackage> pipeOutputPackages = extension.PipeFrom(typeof(TestClassA));
             var package = pipeOutputPackages.Single();
