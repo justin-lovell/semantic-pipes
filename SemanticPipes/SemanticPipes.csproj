@@ -35,9 +35,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="CannotResolveSemanticException.cs" />
     <Compile Include="GenericPipeExtension.cs" />
     <Compile Include="InternalsVisibleToAssemblyAttribute.cs" />
@@ -51,6 +48,9 @@
     <Compile Include="SemanticBroker.cs" />
     <Compile Include="Solver.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

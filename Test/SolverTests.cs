@@ -215,7 +215,7 @@ namespace SemanticPipes
             appendExtensionToSolver(instanceClassC, instanceClassD);
 
             PipeOutputPackage solveAsPipePackage = solver.SolveAsPipePackage(typeof(TestClassA), typeof(TestClassD));
-            object solvedExecution = solveAsPipePackage.ProcessInput(new TestClassA());
+            object solvedExecution = solveAsPipePackage.ProcessInput(instanceClassA);
 
             Assert.AreEqual(instanceClassD, solvedExecution);
         }
