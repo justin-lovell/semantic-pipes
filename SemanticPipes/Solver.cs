@@ -21,7 +21,15 @@ namespace SemanticPipes
 
             GuardAgainstOperationsWithNoPipePackagesInstalled();
 
+            var solvedPackage = TransverseGraphUntilSolved(inputType, outputType);
 
+            GuardAgainstUnsolveableInputOutputResolution(inputType, outputType, solvedPackage);
+
+            return solvedPackage;
+        }
+
+        private PipeOutputPackage TransverseGraphUntilSolved(Type inputType, Type outputType)
+        {
             PipeOutputPackage solvedPackage = null;
 
             var pipingTransversalMap = new Dictionary<Type, PipeOutputPackage[]>();
@@ -38,33 +46,49 @@ namespace SemanticPipes
 
                 pipingTransversalMap.Add(currentTuple.Item1, currentTuple.Item2);
 
-                IEnumerable<PipeOutputPackage> candidatePipesForOutput =
-                    DiscoverPipePackagesAcceptingInputType(currentTuple.Item1);
-                PipeOutputPackage[] currentWalkedPath = currentTuple.Item2 ?? new PipeOutputPackage[0];
-
-                foreach (PipeOutputPackage pipeOutputPackage in candidatePipesForOutput)
-                {
-                    if (pipeOutputPackage.OutputType == outputType)
-                    {
-                        solvedPackage = CreateAggregatedPipeOutputPackage(currentTuple.Item2, pipeOutputPackage);
-                        break;
-                    }
-
-                    if (pipingTransversalMap.ContainsKey(pipeOutputPackage.OutputType))
-                    {
-                        continue;
-                    }
-
-                    PipeOutputPackage[] newPathToDiscover = currentWalkedPath.Union(new[] {pipeOutputPackage}).ToArray();
-                    var tupleToVisit = new Tuple<Type, PipeOutputPackage[]>(pipeOutputPackage.OutputType,
-                        newPathToDiscover);
-                    typesToVisitQueue.Enqueue(tupleToVisit);
-                }
+                solvedPackage = TransverseCurrentTuplePipePackages(typesToVisitQueue,
+                    pipingTransversalMap, currentTuple, outputType);
             }
 
-            GuardAgainstUnsolveableInputOutputResolution(inputType, outputType, solvedPackage);
-
             return solvedPackage;
+        }
+
+        private PipeOutputPackage TransverseCurrentTuplePipePackages(
+            Queue<Tuple<Type, PipeOutputPackage[]>> typesToVisitQueue,
+            Dictionary<Type, PipeOutputPackage[]> pipingTransversalMap, Tuple<Type, PipeOutputPackage[]> currentTuple,
+            Type outputTypeToMatch)
+        {
+            IEnumerable<PipeOutputPackage> candidatePipesForOutput =
+                DiscoverPipePackagesAcceptingInputType(currentTuple.Item1);
+
+            foreach (PipeOutputPackage pipeOutputPackage in candidatePipesForOutput)
+            {
+                if (DoesPackageMatchOutputType(outputTypeToMatch, pipeOutputPackage))
+                {
+                    return CreateAggregatedPipeOutputPackage(currentTuple.Item2, pipeOutputPackage);
+                }
+
+                if (pipingTransversalMap.ContainsKey(pipeOutputPackage.OutputType))
+                {
+                    continue;
+                }
+
+                IdentifyNextTupleToVisit(currentTuple, pipeOutputPackage, typesToVisitQueue);
+            }
+
+            return null;
+        }
+
+        private static void IdentifyNextTupleToVisit(Tuple<Type, PipeOutputPackage[]> currentTuple,
+            PipeOutputPackage pipeOutputPackage,
+            Queue<Tuple<Type, PipeOutputPackage[]>> typesToVisitQueue)
+        {
+            PipeOutputPackage[] currentWalkedPath = currentTuple.Item2 ?? new PipeOutputPackage[0];
+            PipeOutputPackage[] newPathToDiscover = currentWalkedPath.Union(new[] {pipeOutputPackage}).ToArray();
+            var tupleToVisit = new Tuple<Type, PipeOutputPackage[]>(pipeOutputPackage.OutputType,
+                newPathToDiscover);
+
+            typesToVisitQueue.Enqueue(tupleToVisit);
         }
 
         private PipeOutputPackage CreateAggregatedPipeOutputPackage(
@@ -95,8 +119,18 @@ namespace SemanticPipes
                 where pipeOutputPackages != null
                 from package in pipeOutputPackages
                 where package != null
-                      && package.InputType == inputType
+                      && DoesPackageMatchInputType(inputType, package)
                 select package;
+        }
+
+        private static bool DoesPackageMatchInputType(Type inputType, PipeOutputPackage package)
+        {
+            return package.InputType == inputType;
+        }
+
+        private static bool DoesPackageMatchOutputType(Type outputType, PipeOutputPackage package)
+        {
+            return package.OutputType == outputType;
         }
 
         private static void GuardAgainstUnsolveableInputOutputResolution(
