@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -16,8 +14,23 @@ namespace SemanticPipes
         {
         }
 
+        private class TestClassC
+        {
+        }
+
         [Test]
-        public void Pipe_WhenTheProcessDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
+        public void InstallPipe_WhenNullToProcessCallbackParameter_ItShouldThrowArgumentNullException()
+        {
+            var semanticBuilder = new SemanticBuilder();
+
+            var argumentNullException =
+                Assert.Throws<ArgumentNullException>(() => semanticBuilder.InstallPipe<string, string>(null));
+
+            Assert.AreEqual("processCallback", argumentNullException.ParamName);
+        }
+
+        [Test]
+        public void InstallPipe_WhenTheProcessDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
         {
             var expectedTestClassA = new TestClassA();
             var expectedTestClassB = new TestClassB();
@@ -29,8 +42,8 @@ namespace SemanticPipes
             };
 
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.Pipe(processCallback);
-            var semanticBroker = semanticBuilder.CreateBroker();
+            semanticBuilder.InstallPipe(processCallback);
+            SemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             var processedOuput = semanticBroker.On(expectedTestClassA).Output<TestClassB>();
 
@@ -38,14 +51,18 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void Pipe_WhenNullToProcessCallbackParameter_ItShouldThrowArgumentNullException()
+        public void
+            InstallPipe_WhenTheSameSourceDestinationTypesAreRegisteredMoreThanOnce_ItShouldThrowInvalidRegistryConfigurationException
+            ()
         {
             var semanticBuilder = new SemanticBuilder();
 
-            var argumentNullException =
-                Assert.Throws<ArgumentNullException>(() => semanticBuilder.Pipe<string, string>(null));
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
+            semanticBuilder.InstallPipe<TestClassA, TestClassC>(a => null);
+            semanticBuilder.InstallPipe<TestClassB, TestClassA>(b => null);
 
-            Assert.AreEqual("processCallback", argumentNullException.ParamName);
+            Assert.Throws<InvalidRegistryConfigurationException>(
+                () => semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null));
         }
     }
 }
