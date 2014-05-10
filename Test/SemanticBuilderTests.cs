@@ -43,7 +43,7 @@ namespace SemanticPipes
 
             var semanticBuilder = new SemanticBuilder();
             semanticBuilder.InstallPipe(processCallback);
-            SemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             var processedOuput = semanticBroker.On(expectedTestClassA).Output<TestClassB>();
 

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SemanticPipes
 {
-    public sealed class SemanticBroker : ISemanticBroker
+    internal sealed class Broker : ISemanticBroker
     {
         private readonly Solver _solver;
 
-        internal SemanticBroker(Solver solver)
+        internal Broker(Solver solver)
         {
             _solver = solver;
         }

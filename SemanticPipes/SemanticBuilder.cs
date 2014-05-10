@@ -8,7 +8,7 @@ namespace SemanticPipes
         private readonly Dictionary<InputOutputPair, PipeExtension> _installedPipes =
             new Dictionary<InputOutputPair, PipeExtension>();
 
-        public SemanticBroker CreateBroker()
+        public ISemanticBroker CreateBroker()
         {
             var solver = new Solver();
 
@@ -17,7 +17,7 @@ namespace SemanticPipes
                 solver.Install(installedPipe.Value);
             }
 
-            return new SemanticBroker(solver);
+            return new Broker(solver);
         }
 
         public SemanticBuilder InstallPipe<TSource, TDestination>(Func<TSource, TDestination> processCallback)
