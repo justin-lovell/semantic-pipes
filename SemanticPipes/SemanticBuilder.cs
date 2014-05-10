@@ -1,4 +1,6 @@
-﻿namespace SemanticPipes
+﻿using System;
+
+namespace SemanticPipes
 {
     public sealed class SemanticBuilder
     {
@@ -13,6 +15,15 @@
         public SemanticBroker CreateBroker()
         {
             return new SemanticBroker(_currentSolver);
+        }
+
+        public SemanticBuilder Pipe<TSource, TDestination>(Func<TSource, TDestination> processCallback)
+        {
+            var extension = new GenericPipeExtension<TSource, TDestination>(processCallback);
+
+            _currentSolver.Install(extension);
+
+            return this;
         }
     }
 }

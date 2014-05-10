@@ -8,13 +8,6 @@ namespace SemanticPipes
     [TestFixture]
     public class GenericPipeExtensionTests
     {
-        [Test]
-        public void Ctor_WhenNullToProcessCallbackParameter_ItShouldThrowArgumentNullException()
-        {
-            var argumentNullException = Assert.Throws<ArgumentNullException>(() => new GenericPipeExtension<TestClassA, TestClassB>(null));
-
-            Assert.AreEqual("processCallback", argumentNullException.ParamName);
-        }
 
         [Test]
         public void PipeFrom_WhenNullToSourceTypeParameter_ItShouldReturnNull()
@@ -50,27 +43,6 @@ namespace SemanticPipes
             var package = pipeOutputPackages.Single();
 
             Assert.AreEqual(typeof(TestClassB), package.OutputType);
-        }
-
-        [Test]
-        public void PipeFrom_WhenTheProcessDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
-        {
-            var expectedTestClassA = new TestClassA();
-            var expectedTestClassB = new TestClassB();
-
-            Func<TestClassA, TestClassB> processCallback = a =>
-            {
-                Assert.AreSame(expectedTestClassA, a);
-                return expectedTestClassB;
-            };
-            var extension = PipeExtensionFactory.Process(processCallback);
-
-            IEnumerable<PipeOutputPackage> pipeOutputPackages = extension.PipeFrom(typeof(TestClassA));
-            var package = pipeOutputPackages.Single();
-
-            object processedInput = package.ProcessInput(expectedTestClassA);
-
-            Assert.AreSame(expectedTestClassB, processedInput);
         }
 
         private class TestClassA { }
