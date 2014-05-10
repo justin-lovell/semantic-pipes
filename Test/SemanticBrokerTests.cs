@@ -30,17 +30,8 @@ namespace SemanticPipes
         {
             var expectedOutputObject = new TestObjectB();
 
-            Type inputType = typeof (TestObjectA);
-            Type outputType = expectedOutputObject.GetType();
-
-
-            var expectedPackage = new PipeOutputPackage(inputType, outputType, o => expectedOutputObject);
-
-            var pipeExtension = A.Fake<IPipeExtension>();
-            A.CallTo(() => pipeExtension.PipeFrom(inputType)).Returns(new[] {expectedPackage});
-
             var builder = new SemanticBuilder();
-            builder.Install(pipeExtension);
+            builder.InstallPipe<TestObjectA, TestObjectB>(a => expectedOutputObject);
 
             var broker = builder.CreateBroker();
 

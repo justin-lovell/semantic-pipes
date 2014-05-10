@@ -8,22 +8,9 @@ namespace SemanticPipes
         private readonly Dictionary<InputOutputPair, PipeExtension> _installedPipes =
             new Dictionary<InputOutputPair, PipeExtension>();
 
-        private readonly List<IPipeExtension> _pipeExtensions = new List<IPipeExtension>();
-
-        public SemanticBuilder Install(IPipeExtension pipeExtension)
-        {
-            _pipeExtensions.Add(pipeExtension);
-            return this;
-        }
-
         public SemanticBroker CreateBroker()
         {
             var solver = new Solver();
-
-            foreach (IPipeExtension pipeExtension in _pipeExtensions)
-            {
-                solver.Install(pipeExtension);
-            }
 
             foreach (var installedPipe in _installedPipes)
             {
