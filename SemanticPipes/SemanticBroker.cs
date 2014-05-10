@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SemanticPipes
 {
     public sealed class SemanticBroker : ISemanticBroker
     {
-        private readonly Solver _solver = new Solver();
+        private readonly Solver _solver;
+
+        internal SemanticBroker(Solver solver)
+        {
+            _solver = solver;
+        }
 
         public ISemanticOpenPipe On<TSource>(TSource source)
             where TSource : class
@@ -12,11 +18,6 @@ namespace SemanticPipes
             if (source == null) throw new ArgumentNullException("source");
 
             return new SolvingPipe<TSource>(_solver, source);
-        }
-
-        internal void Install(IPipeExtension pipeExtension)
-        {
-            _solver.Install(pipeExtension);
         }
 
         private class SolvingPipe<TSource> : ISemanticOpenPipe

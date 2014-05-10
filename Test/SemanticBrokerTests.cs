@@ -18,7 +18,8 @@ namespace SemanticPipes
         [Test]
         public void On_WhenNullToSourceParameter_ItShouldThrowArgumentNullException()
         {
-            var broker = new SemanticBroker();
+            var builder = new SemanticBuilder();
+            var broker = builder.CreateBroker();
 
             var argumentNullException = Assert.Throws<ArgumentNullException>(() => broker.On<string>(null));
             Assert.AreEqual("source", argumentNullException.ParamName);
@@ -38,8 +39,10 @@ namespace SemanticPipes
             var pipeExtension = A.Fake<IPipeExtension>();
             A.CallTo(() => pipeExtension.PipeFrom(inputType)).Returns(new[] {expectedPackage});
 
-            var broker = new SemanticBroker();
-            broker.Install(pipeExtension);
+            var builder = new SemanticBuilder();
+            builder.Install(pipeExtension);
+
+            var broker = builder.CreateBroker();
 
 
             var actualOutputObject = broker.On(new TestObjectA()).Output<TestObjectB>();
