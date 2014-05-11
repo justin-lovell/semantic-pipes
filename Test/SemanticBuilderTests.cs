@@ -95,5 +95,34 @@ namespace SemanticPipes
 
             Assert.IsTrue(wasEventCalled);
         }
+
+        [Test]
+        public void PipeInstalled_WhenEventsAreEnrolledAfterPipesAreAddedToInstallPipe_ItShouldCallTheNewlyAddedEvent()
+        {
+            bool wasEventCalled = false;
+
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
+
+            semanticBuilder.PipeInstalled += (sender, args) => wasEventCalled = true;
+
+            Assert.IsTrue(wasEventCalled);
+        }
+
+        [Test]
+        public void PipeInstalled_WhenEventsAreEnrolled_ItShouldCallTheHandlerDistinctly()
+        {
+            int countPreRegisteredCalled = 0;
+            int countPostRegisteredCalled = 0;
+
+            var semanticBuilder = new SemanticBuilder();
+
+            semanticBuilder.PipeInstalled += (sender, args) => countPreRegisteredCalled++;
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
+            semanticBuilder.PipeInstalled += (sender, args) => countPostRegisteredCalled++;
+
+            Assert.AreEqual(1, countPreRegisteredCalled);
+            Assert.AreEqual(1, countPostRegisteredCalled);
+        }
     }
 }

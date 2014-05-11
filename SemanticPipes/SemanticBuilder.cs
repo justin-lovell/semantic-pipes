@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SemanticPipes
 {
@@ -17,6 +18,14 @@ namespace SemanticPipes
             {
                 if (value == null) return;
 
+                IEnumerable<PipeExtension> currentPipeExtensions = IterateCurrentPipeExtensions();
+                foreach (PipeExtension currentPipeExtension in currentPipeExtensions)
+                {
+                    SemanticPipeInstalledEventArgs eventArgs =
+                        CreateInstalledEventArgsForPipeExtension(currentPipeExtension);
+                    value(this, eventArgs);
+                }
+
                 _pipeInstalledHandlers.Add(value);
             }
             remove { _pipeInstalledHandlers.Remove(value); }
@@ -29,7 +38,7 @@ namespace SemanticPipes
 
         private void OnPipeInstalled(PipeExtension pipeExtension)
         {
-            var e = CreateInstalledEventArgsForPipeExtension(pipeExtension);
+            SemanticPipeInstalledEventArgs e = CreateInstalledEventArgsForPipeExtension(pipeExtension);
 
             foreach (var handler in _pipeInstalledHandlers)
             {
@@ -37,13 +46,19 @@ namespace SemanticPipes
             }
         }
 
+        private IEnumerable<PipeExtension> IterateCurrentPipeExtensions()
+        {
+            return _installedPipes.Select(installedPipe => installedPipe.Value);
+        }
+
         public ISemanticBroker CreateBroker()
         {
             var solver = new Solver();
+            IEnumerable<PipeExtension> currentPipeExtensions = IterateCurrentPipeExtensions();
 
-            foreach (var installedPipe in _installedPipes)
+            foreach (PipeExtension currentPipeExtension in currentPipeExtensions)
             {
-                solver.Install(installedPipe.Value);
+                solver.Install(currentPipeExtension);
             }
 
             return new Broker(solver);
