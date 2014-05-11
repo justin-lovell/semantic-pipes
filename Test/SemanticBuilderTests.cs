@@ -64,5 +64,36 @@ namespace SemanticPipes
             Assert.Throws<InvalidRegistryConfigurationException>(
                 () => semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null));
         }
+
+        [Test]
+        public void PipeInstalled_WhenPipesAreAddedToInstallPipe_ItShouldOnlyRaiseTheRelevantEvent()
+        {
+            bool wasProcessCalled = false;
+
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.PipeInstalled +=
+                (sender, args) => args.PipeExtension.ProcessCallback(new TestClassA());
+
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>(a =>
+            {
+                wasProcessCalled = true;
+                return new TestClassB();
+            });
+
+            Assert.IsTrue(wasProcessCalled);
+        }
+
+        [Test]
+        public void PipeInstalled_WhenPipesAreAddedToInstallPipe_ItShouldRaiseThePipeInstalledEvent()
+        {
+            bool wasEventCalled = false;
+
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.PipeInstalled += (sender, args) => wasEventCalled = true;
+
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
+
+            Assert.IsTrue(wasEventCalled);
+        }
     }
 }

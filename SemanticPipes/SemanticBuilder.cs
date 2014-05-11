@@ -8,6 +8,35 @@ namespace SemanticPipes
         private readonly Dictionary<InputOutputPair, PipeExtension> _installedPipes =
             new Dictionary<InputOutputPair, PipeExtension>();
 
+        private readonly List<EventHandler<SemanticPipeInstalledEventArgs>> _pipeInstalledHandlers =
+            new List<EventHandler<SemanticPipeInstalledEventArgs>>();
+
+        public event EventHandler<SemanticPipeInstalledEventArgs> PipeInstalled
+        {
+            add
+            {
+                if (value == null) return;
+
+                _pipeInstalledHandlers.Add(value);
+            }
+            remove { _pipeInstalledHandlers.Remove(value); }
+        }
+
+        private SemanticPipeInstalledEventArgs CreateInstalledEventArgsForPipeExtension(PipeExtension pipeExtension)
+        {
+            return new SemanticPipeInstalledEventArgs(pipeExtension.AppendPackage, pipeExtension);
+        }
+
+        private void OnPipeInstalled(PipeExtension pipeExtension)
+        {
+            var e = CreateInstalledEventArgsForPipeExtension(pipeExtension);
+
+            foreach (var handler in _pipeInstalledHandlers)
+            {
+                handler(this, e);
+            }
+        }
+
         public ISemanticBroker CreateBroker()
         {
             var solver = new Solver();
@@ -28,13 +57,16 @@ namespace SemanticPipes
 
             GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(inputOutputPair);
 
-            var extension = CreatePipeExtension(processCallback);
+            PipeExtension extension = CreatePipeExtension(processCallback);
+
+            OnPipeInstalled(extension);
             _installedPipes.Add(inputOutputPair, extension);
 
             return this;
         }
 
-        private static PipeExtension CreatePipeExtension<TSource, TDestination>(Func<TSource, TDestination> processCallback)
+        private static PipeExtension CreatePipeExtension<TSource, TDestination>(
+            Func<TSource, TDestination> processCallback)
         {
             Func<object, object> wrappedProcessCallback = rawInput =>
             {
