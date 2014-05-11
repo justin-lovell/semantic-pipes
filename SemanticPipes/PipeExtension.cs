@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SemanticPipes
 {
-    internal sealed class PipeExtension : IPipeExtension
+    public sealed class PipeExtension : IPipeExtension
     {
-        public PipeExtension(Func<object, object> processCallback, Type sourceType, Type destinationType)
+        internal PipeExtension(Type sourceType, Type destinationType, Func<object, object> processCallback)
         {
             ProcessCallback = processCallback;
             SourceType = sourceType;

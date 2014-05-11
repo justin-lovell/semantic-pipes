@@ -41,7 +41,7 @@ namespace SemanticPipes
                 var castedInput = (TSource) rawInput;
                 return processCallback(castedInput);
             };
-            var extension = new PipeExtension(wrappedProcessCallback, typeof (TSource), typeof (TDestination));
+            var extension = new PipeExtension(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
             return extension;
         }
 
