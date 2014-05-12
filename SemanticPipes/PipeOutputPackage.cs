@@ -49,7 +49,7 @@ namespace SemanticPipes
         private void GuardAgainstUnexpectedReturnTypeFromCallback(object output)
         {
             Type outputType = output.GetType();
-            if (outputType == OutputType) return;
+            if (OutputType.IsAssignableFrom(outputType)) return;
 
             string message =
                 string.Format("Expected an output of type '{0}'. Instead, we got an object of type of '{1}'.",

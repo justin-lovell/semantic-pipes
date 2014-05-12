@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,6 +12,35 @@ namespace SemanticPipes
 
         private readonly List<EventHandler<SemanticPipeInstalledEventArgs>> _pipeInstalledHandlers =
             new List<EventHandler<SemanticPipeInstalledEventArgs>>();
+
+        public SemanticBuilder()
+        {
+            PipeInstalled += (sender, args) =>
+            {
+                Func<Type, Type> generateTargetType =
+                    type => type.MakeGenericType(args.PipeExtension.DestinationType);
+
+                Type listDestinationType = generateTargetType(typeof (List<>));
+
+                Func<object, object> processCallbackFunc = o =>
+                {
+                    var list = (IList) Activator.CreateInstance(listDestinationType);
+                    list.Add(args.PipeExtension.ProcessCallback(o));
+                    return list;
+                };
+                Action<Type> registerTarget = type =>
+                {
+                    var pipeOutputPackage =
+                        new PipeOutputPackage(args.PipeExtension.SourceType, type, processCallbackFunc);
+                    args.AppendPackage(pipeOutputPackage);
+                };
+
+                registerTarget(listDestinationType);
+                registerTarget(generateTargetType(typeof (IEnumerable<>)));
+                registerTarget(generateTargetType(typeof (IList<>)));
+                registerTarget(generateTargetType(typeof (ICollection<>)));
+            };
+        }
 
         public event EventHandler<SemanticPipeInstalledEventArgs> PipeInstalled
         {
