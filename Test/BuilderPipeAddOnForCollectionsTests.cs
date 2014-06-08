@@ -2,13 +2,13 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace SemanticPipes.Scenarios
+namespace SemanticPipes
 {
     [TestFixture]
-    public class SemanticBroker_PipeToEnumerableTests
+    public class BuilderPipeAddOnForCollectionsTests
     {
         [Test]
-        public void WhenRegisteringPipe_ItShouldRegisterPackage()
+        public void InstallHandler_WhenRegisteringPipe_ItShouldRegisterSingleItemToEnumerablePackage()
         {
             var expectedReturnObject = new TestObjectB();
             var semanticBuilder = new SemanticBuilder();

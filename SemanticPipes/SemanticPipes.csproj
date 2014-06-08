@@ -35,6 +35,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BuilderPipeAddOnForCollections.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
     <Compile Include="InternalsVisibleToAssemblyAttribute.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />

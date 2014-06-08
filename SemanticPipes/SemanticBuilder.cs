@@ -8,38 +8,14 @@ namespace SemanticPipes
     public sealed class SemanticBuilder
     {
         private readonly Dictionary<InputOutputPair, PipeExtension> _installedPipes =
-            new Dictionary<InputOutputPair, PipeExtension>();
+            new Dictionary<SemanticBuilder.InputOutputPair, PipeExtension>();
 
         private readonly List<EventHandler<SemanticPipeInstalledEventArgs>> _pipeInstalledHandlers =
             new List<EventHandler<SemanticPipeInstalledEventArgs>>();
 
         public SemanticBuilder()
         {
-            PipeInstalled += (sender, args) =>
-            {
-                Func<Type, Type> generateTargetType =
-                    type => type.MakeGenericType(args.PipeExtension.DestinationType);
-
-                Type listDestinationType = generateTargetType(typeof (List<>));
-
-                Func<object, object> processCallbackFunc = o =>
-                {
-                    var list = (IList) Activator.CreateInstance(listDestinationType);
-                    list.Add(args.PipeExtension.ProcessCallback(o));
-                    return list;
-                };
-                Action<Type> registerTarget = type =>
-                {
-                    var pipeOutputPackage =
-                        new PipeOutputPackage(args.PipeExtension.SourceType, type, processCallbackFunc);
-                    args.AppendPackage(pipeOutputPackage);
-                };
-
-                registerTarget(listDestinationType);
-                registerTarget(generateTargetType(typeof (IEnumerable<>)));
-                registerTarget(generateTargetType(typeof (IList<>)));
-                registerTarget(generateTargetType(typeof (ICollection<>)));
-            };
+            PipeInstalled += BuilderPipeAddOnForCollections.InstallHandler;
         }
 
         public event EventHandler<SemanticPipeInstalledEventArgs> PipeInstalled
@@ -98,7 +74,7 @@ namespace SemanticPipes
         {
             if (processCallback == null) throw new ArgumentNullException("processCallback");
 
-            var inputOutputPair = new InputOutputPair(typeof (TSource), typeof (TDestination));
+            var inputOutputPair = new SemanticBuilder.InputOutputPair(typeof (TSource), typeof (TDestination));
 
             GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(inputOutputPair);
 
@@ -122,7 +98,7 @@ namespace SemanticPipes
             return extension;
         }
 
-        private void GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(InputOutputPair inputOutputPair)
+        private void GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(SemanticBuilder.InputOutputPair inputOutputPair)
         {
             if (!_installedPipes.ContainsKey(inputOutputPair)) return;
 
