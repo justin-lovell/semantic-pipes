@@ -16,6 +16,7 @@ namespace SemanticPipes
         }
 
         [Test]
+        [Ignore]
         public void GivenTwoClasses_WhenSolvingSingleClassToCollection_ItShouldResolve()
         {
             // pre-arrangement

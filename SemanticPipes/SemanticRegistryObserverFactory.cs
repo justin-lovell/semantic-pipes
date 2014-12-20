@@ -6,8 +6,9 @@ namespace SemanticPipes
     {
         public static IEnumerable<ISemanticRegistryObserver> CreateInternalObservers()
         {
-            //PipeInstalled += BuilderPipeAddOnForCollections.InstallHandler;
-            yield break;
+            yield return new BuilderPipeFromSingleObjectToSingleItemList();
+            // todo: convert to an array
+            // todo: walkthrough inheritance chain
         }
     }
 }
