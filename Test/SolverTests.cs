@@ -1,5 +1,4 @@
 ﻿using System;
-using FakeItEasy;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -157,68 +156,6 @@ namespace SemanticPipes
             Assert.AreSame(expectedPackage, solvedPackage);
         }
 
-        [Test]
-        public void SolveAsPipePackage_WhenGivenOneClassToBeConvertedToAnother_ItShouldCreateAPipePackageToConnectThose()
-        {
-            var solver = new Solver();
-
-            Action<Type, Type> appendExtensionToSolver = (inputType, outputType) =>
-            {
-                var expectedPackage = new PipeOutputPackage(inputType, outputType, o => null);
-
-                var pipelineExtension = A.Fake<IPipeExtension>();
-                A.CallTo(() => pipelineExtension.PipeFrom(inputType)).Returns(new[] {expectedPackage});
-
-                solver.Install(pipelineExtension);
-            };
-
-            appendExtensionToSolver(typeof (TestClassA), typeof (TestClassB));
-            appendExtensionToSolver(typeof (TestClassB), typeof (TestClassC));
-            appendExtensionToSolver(typeof (TestClassC), typeof (TestClassD));
-
-            PipeOutputPackage solveAsPipePackage = solver.SolveAsPipePackage(typeof (TestClassA), typeof (TestClassD));
-
-            Assert.AreEqual(typeof (TestClassA), solveAsPipePackage.InputType);
-            Assert.AreEqual(typeof (TestClassD), solveAsPipePackage.OutputType);
-        }
-
-        [Test]
-        public void SolveAsPipePackage_WhenGivenOneClassToBeConvertedToAnother_ItChainTheValuesCorrectly()
-        {
-            var solver = new Solver();
-
-            Action<object, object> appendExtensionToSolver = (inputInstance, outputInstance) =>
-            {
-                Type inputType = inputInstance.GetType();
-                Type outputType = outputInstance.GetType();
-
-                var expectedPackage = new PipeOutputPackage(inputType, outputType,
-                    o =>
-                    {
-                        Assert.AreSame(inputInstance, o);
-                        return outputInstance;
-                    });
-
-                var pipelineExtension = A.Fake<IPipeExtension>();
-                A.CallTo(() => pipelineExtension.PipeFrom(inputType)).Returns(new[] { expectedPackage });
-
-                solver.Install(pipelineExtension);
-            };
-
-            var instanceClassA = new TestClassA();
-            var instanceClassB = new TestClassB();
-            var instanceClassC = new TestClassC();
-            var instanceClassD = new TestClassD();
-
-            appendExtensionToSolver(instanceClassA, instanceClassB);
-            appendExtensionToSolver(instanceClassB, instanceClassC);
-            appendExtensionToSolver(instanceClassC, instanceClassD);
-
-            PipeOutputPackage solveAsPipePackage = solver.SolveAsPipePackage(typeof(TestClassA), typeof(TestClassD));
-            object solvedExecution = solveAsPipePackage.ProcessInput(instanceClassA);
-
-            Assert.AreEqual(instanceClassD, solvedExecution);
-        }
 
 
         private class TestClassA { }
