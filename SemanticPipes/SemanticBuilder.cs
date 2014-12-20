@@ -9,50 +9,8 @@ namespace SemanticPipes
         private readonly Dictionary<InputOutputPair, PipeExtension> _installedPipes =
             new Dictionary<InputOutputPair, PipeExtension>();
 
-        private readonly List<EventHandler<SemanticPipeInstalledEventArgs>> _pipeInstalledHandlers =
-            new List<EventHandler<SemanticPipeInstalledEventArgs>>();
-
-        public SemanticBuilder()
-        {
-            PipeInstalled += BuilderPipeAddOnForCollections.InstallHandler;
-        }
-
-        public event EventHandler<SemanticPipeInstalledEventArgs> PipeInstalled
-        {
-            add
-            {
-                if (value == null)
-                {
-                    return;
-                }
-
-                IEnumerable<PipeExtension> currentPipeExtensions = IterateCurrentPipeExtensions();
-                foreach (PipeExtension currentPipeExtension in currentPipeExtensions)
-                {
-                    SemanticPipeInstalledEventArgs eventArgs =
-                        CreateInstalledEventArgsForPipeExtension(currentPipeExtension);
-                    value(this, eventArgs);
-                }
-
-                _pipeInstalledHandlers.Add(value);
-            }
-            remove { _pipeInstalledHandlers.Remove(value); }
-        }
-
-        private SemanticPipeInstalledEventArgs CreateInstalledEventArgsForPipeExtension(PipeExtension pipeExtension)
-        {
-            return new SemanticPipeInstalledEventArgs(pipeExtension.AppendPackage, pipeExtension);
-        }
-
-        private void OnPipeInstalled(PipeExtension pipeExtension)
-        {
-            SemanticPipeInstalledEventArgs e = CreateInstalledEventArgsForPipeExtension(pipeExtension);
-
-            foreach (var handler in _pipeInstalledHandlers)
-            {
-                handler(this, e);
-            }
-        }
+        private readonly RegistryMediator _registryMediator =
+            new RegistryMediator(SemanticRegistryObserverFactory.CreateInternalObservers());
 
         private IEnumerable<PipeExtension> IterateCurrentPipeExtensions()
         {
@@ -85,8 +43,12 @@ namespace SemanticPipes
 
             PipeExtension extension = CreatePipeExtension(processCallback);
 
-            OnPipeInstalled(extension);
+
             _installedPipes.Add(inputOutputPair, extension);
+
+
+            PipeOutputPackage package = CreatePipeOutputPackage(processCallback);
+            _registryMediator.AppendPackage(package);
 
             return this;
         }
@@ -103,6 +65,19 @@ namespace SemanticPipes
             return extension;
         }
 
+        private static PipeOutputPackage CreatePipeOutputPackage<TSource, TDestination>(
+            Func<TSource, TDestination> processCallback)
+        {
+            Func<object, object> wrappedProcessCallback = rawInput =>
+            {
+                var castedInput = (TSource) rawInput;
+                return processCallback(castedInput);
+            };
+
+            var package = new PipeOutputPackage(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
+            return package;
+        }
+
         private void GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(InputOutputPair inputOutputPair)
         {
             if (!_installedPipes.ContainsKey(inputOutputPair))
@@ -113,6 +88,11 @@ namespace SemanticPipes
             string message = string.Format("The pipe input of '{0}' to ouput of '{1}' has already been installed.",
                 typeof (TSource), typeof (TDestination));
             throw new InvalidRegistryConfigurationException(message);
+        }
+
+        public void RegisterObserver(ISemanticRegistryObserver observer)
+        {
+            _registryMediator.AppendObserver(observer);
         }
 
         private sealed class InputOutputPair : Tuple<Type, Type>

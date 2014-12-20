@@ -41,12 +41,14 @@
     <Compile Include="IPipeExtension.cs" />
     <Compile Include="ISemanticOpenPipe.cs" />
     <Compile Include="ISemanticBroker.cs" />
+    <Compile Include="ISemanticRegistryObserver.cs" />
     <Compile Include="PipeExtension.cs" />
     <Compile Include="PipeOutputPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Broker.cs" />
     <Compile Include="SemanticBuilder.cs" />
-    <Compile Include="SemanticPipeInstalledEventArgs.cs" />
+    <Compile Include="RegistryMediator.cs" />
+    <Compile Include="SemanticRegistryObserverFactory.cs" />
     <Compile Include="Solver.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -14,6 +15,21 @@ namespace SemanticPipes
         {
         }
 
+        private class TestRegistryObserver : ISemanticRegistryObserver
+        {
+            private readonly Func<PipeOutputPackage, IEnumerable<PipeOutputPackage>> _callbackFunc;
+
+            public TestRegistryObserver(Func<PipeOutputPackage, IEnumerable<PipeOutputPackage>> callbackFunc)
+            {
+                _callbackFunc = callbackFunc;
+            }
+
+            public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
+            {
+                return _callbackFunc(package);
+            }
+        }
+
         [Test]
         public void GivenPopulatedRegistry_WhenObserverEnrollsLater_ItShouldBeNotifiedOfPreviousRegistrations()
         {
@@ -27,12 +43,14 @@ namespace SemanticPipes
             semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
 
             // act
-            semanticBuilder.PipeInstalled += (sender, args) =>
+            var observer = new TestRegistryObserver(package =>
             {
                 wasEventCalled = true;
-                sourceType = args.PipeExtension.SourceType;
-                destinationType = args.PipeExtension.DestinationType;
-            };
+                sourceType = package.InputType;
+                destinationType = package.OutputType;
+                return null;
+            });
+            semanticBuilder.RegisterObserver(observer);
 
             // assert
             Assert.IsTrue(wasEventCalled);
@@ -48,7 +66,12 @@ namespace SemanticPipes
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.PipeInstalled += (sender, args) => wasEventCalled = true;
+            var observer = new TestRegistryObserver(package =>
+            {
+                wasEventCalled = true;
+                return null;
+            });
+            semanticBuilder.RegisterObserver(observer);
 
             // act
             semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
@@ -66,11 +89,22 @@ namespace SemanticPipes
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
+            
+            var observer1 = new TestRegistryObserver(package =>
+            {
+                countPreRegisteredCalled++;
+                return null;
+            });
+            var observer2 = new TestRegistryObserver(package =>
+            {
+                countPostRegisteredCalled++;
+                return null;
+            });
 
             // act
-            semanticBuilder.PipeInstalled += (sender, args) => countPreRegisteredCalled++;
+            semanticBuilder.RegisterObserver(observer1);
             semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
-            semanticBuilder.PipeInstalled += (sender, args) => countPostRegisteredCalled++;
+            semanticBuilder.RegisterObserver(observer2);
 
             // assert
             Assert.AreEqual(1, countPreRegisteredCalled);
