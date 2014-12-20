@@ -47,7 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuilderPipeAddOnForCollectionsTests.cs" />
+    <Compile Include="Feature_AutoMappingObjectsToCollectionObjects_Tests.cs" />
+    <Compile Include="Feature_ObserveRegistration_Tests.cs" />
+    <Compile Include="Feature_RegistrationGuarding_Tests.cs" />
     <Compile Include="PipeOutputPackageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SemanticBrokerTests.cs" />

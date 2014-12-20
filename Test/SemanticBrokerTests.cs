@@ -6,11 +6,11 @@ namespace SemanticPipes
     [TestFixture]
     public class SemanticBrokerTests
     {
-        private class TestObjectA
+        private class TestClassA
         {
         }
 
-        private class TestObjectB
+        private class TestClassB
         {
         }
 
@@ -32,19 +32,45 @@ namespace SemanticPipes
         public void GivenBrokerWithPipeFromObjectAToObjectB_WhenResolving_ItShouldInstantiateThePipe()
         {
             // pre-arrangement
-            var expectedOutputObject = new TestObjectB();
+            var expectedOutputObject = new TestClassB();
 
             // arrangement
             var builder = new SemanticBuilder();
-            builder.InstallPipe<TestObjectA, TestObjectB>(a => expectedOutputObject);
+            builder.InstallPipe<TestClassA, TestClassB>(a => expectedOutputObject);
 
             ISemanticBroker broker = builder.CreateBroker();
 
             // act
-            var actualOutputObject = broker.On(new TestObjectA()).Output<TestObjectB>();
+            var actualOutputObject = broker.On(new TestClassA()).Output<TestClassB>();
 
             // assert
             Assert.AreSame(expectedOutputObject, actualOutputObject);
+        }
+
+
+        [Test]
+        public void GivenRegistration_WhenTheProcessDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
+        {
+            // pre-arrangement
+            var expectedTestClassA = new TestClassA();
+            var expectedTestClassB = new TestClassB();
+
+            // arrange
+            var semanticBuilder = new SemanticBuilder();
+
+            Func<TestClassA, TestClassB> processCallback = a =>
+            {
+                Assert.AreSame(expectedTestClassA, a);
+                return expectedTestClassB;
+            };
+            semanticBuilder.InstallPipe(processCallback);
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+
+            // act
+            var processedOuput = semanticBroker.On(expectedTestClassA).Output<TestClassB>();
+
+            // assert
+            Assert.AreSame(expectedTestClassB, processedOuput);
         }
     }
 }
