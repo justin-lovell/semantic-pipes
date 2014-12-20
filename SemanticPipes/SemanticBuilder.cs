@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +7,7 @@ namespace SemanticPipes
     public sealed class SemanticBuilder
     {
         private readonly Dictionary<InputOutputPair, PipeExtension> _installedPipes =
-            new Dictionary<SemanticBuilder.InputOutputPair, PipeExtension>();
+            new Dictionary<InputOutputPair, PipeExtension>();
 
         private readonly List<EventHandler<SemanticPipeInstalledEventArgs>> _pipeInstalledHandlers =
             new List<EventHandler<SemanticPipeInstalledEventArgs>>();
@@ -22,7 +21,10 @@ namespace SemanticPipes
         {
             add
             {
-                if (value == null) return;
+                if (value == null)
+                {
+                    return;
+                }
 
                 IEnumerable<PipeExtension> currentPipeExtensions = IterateCurrentPipeExtensions();
                 foreach (PipeExtension currentPipeExtension in currentPipeExtensions)
@@ -72,9 +74,12 @@ namespace SemanticPipes
 
         public SemanticBuilder InstallPipe<TSource, TDestination>(Func<TSource, TDestination> processCallback)
         {
-            if (processCallback == null) throw new ArgumentNullException("processCallback");
+            if (processCallback == null)
+            {
+                throw new ArgumentNullException("processCallback");
+            }
 
-            var inputOutputPair = new SemanticBuilder.InputOutputPair(typeof (TSource), typeof (TDestination));
+            var inputOutputPair = new InputOutputPair(typeof (TSource), typeof (TDestination));
 
             GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(inputOutputPair);
 
@@ -98,9 +103,12 @@ namespace SemanticPipes
             return extension;
         }
 
-        private void GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(SemanticBuilder.InputOutputPair inputOutputPair)
+        private void GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(InputOutputPair inputOutputPair)
         {
-            if (!_installedPipes.ContainsKey(inputOutputPair)) return;
+            if (!_installedPipes.ContainsKey(inputOutputPair))
+            {
+                return;
+            }
 
             string message = string.Format("The pipe input of '{0}' to ouput of '{1}' has already been installed.",
                 typeof (TSource), typeof (TDestination));
