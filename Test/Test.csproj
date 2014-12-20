@@ -54,7 +54,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SemanticBrokerTests.cs" />
     <Compile Include="SemanticBuilderTests.cs" />
-    <Compile Include="SemanticPipeInstalledEventArgsTests.cs" />
     <Compile Include="SolverTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -37,7 +37,6 @@
   <ItemGroup>
     <Compile Include="BuilderPipeAddOnForCollections.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
-    <Compile Include="InternalsVisibleToAssemblyAttribute.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />
     <Compile Include="IPipeExtension.cs" />
     <Compile Include="ISemanticOpenPipe.cs" />
