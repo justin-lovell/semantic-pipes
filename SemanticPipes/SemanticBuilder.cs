@@ -39,8 +39,6 @@ namespace SemanticPipes
 
             var inputOutputPair = new InputOutputPair(typeof (TSource), typeof (TDestination));
 
-            GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(inputOutputPair);
-
             PipeExtension extension = CreatePipeExtension(processCallback);
 
 
@@ -76,18 +74,6 @@ namespace SemanticPipes
 
             var package = new PipeOutputPackage(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
             return package;
-        }
-
-        private void GuardDuplicateInputOutputPairRegistration<TSource, TDestination>(InputOutputPair inputOutputPair)
-        {
-            if (!_installedPipes.ContainsKey(inputOutputPair))
-            {
-                return;
-            }
-
-            string message = string.Format("The pipe input of '{0}' to ouput of '{1}' has already been installed.",
-                typeof (TSource), typeof (TDestination));
-            throw new InvalidRegistryConfigurationException(message);
         }
 
         public void RegisterObserver(ISemanticRegistryObserver observer)
