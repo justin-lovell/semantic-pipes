@@ -6,7 +6,7 @@ namespace SemanticPipes
     {
         public static IEnumerable<ISemanticRegistryObserver> CreateInternalObservers()
         {
-            yield return new BuilderPipeFromSingleObjectToSingleItemList();
+            yield return new BuilderPipeFromNonEnumerableToSingleItemList();
             // todo: convert to an array
             // todo: walkthrough inheritance chain
         }

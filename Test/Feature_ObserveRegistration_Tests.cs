@@ -107,8 +107,8 @@ namespace SemanticPipes
             semanticBuilder.RegisterObserver(observer2);
 
             // assert
-            Assert.AreEqual(1, countPreRegisteredCalled);
-            Assert.AreEqual(1, countPostRegisteredCalled);
+            Assert.GreaterOrEqual(countPreRegisteredCalled, 1);
+            Assert.GreaterOrEqual(countPostRegisteredCalled, 1);
         }
     }
 }

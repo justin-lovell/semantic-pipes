@@ -35,7 +35,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BuilderPipeFromSingleObjectToSingleCollection.cs" />
+    <Compile Include="BuilderPipeFromNonEnumerableToSingleItemList.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />
     <Compile Include="IPipeExtension.cs" />
