@@ -24,17 +24,12 @@ namespace SemanticPipes
         {
             if (sourceType != SourceType) yield break;
 
-            yield return new PipeOutputPackage(SourceType, DestinationType, ProcessCallback);
+            yield return new PipeOutputPackage(0, SourceType, DestinationType, ProcessCallback);
 
             foreach (PipeOutputPackage pipeOutputPackage in _packages)
             {
                 yield return pipeOutputPackage;
             }
-        }
-
-        internal void AppendPackage(PipeOutputPackage package)
-        {
-            _packages.Add(package);
         }
     }
 }

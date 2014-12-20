@@ -10,6 +10,11 @@ namespace SemanticPipes
 
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
+            if (!package.IsFromUserRegistration())
+            {
+                yield break;
+            }
+
             var keyToSearchFor = new Tuple<Type, Type>(package.InputType, package.OutputType);
 
             if (_registeredPackages.ContainsKey(keyToSearchFor))
@@ -18,7 +23,6 @@ namespace SemanticPipes
             }
 
             _registeredPackages.Add(keyToSearchFor, package);
-            yield break;
         }
 
         private void RaiseException(Tuple<Type, Type> tuple)

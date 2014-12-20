@@ -37,6 +37,10 @@ namespace SemanticPipes
                 throw new ArgumentNullException("processCallback");
             }
 
+            PipeOutputPackage package = CreatePipeOutputPackage(processCallback);
+            _registryMediator.AppendPackage(package);
+
+
             var inputOutputPair = new InputOutputPair(typeof (TSource), typeof (TDestination));
 
             PipeExtension extension = CreatePipeExtension(processCallback);
@@ -45,8 +49,6 @@ namespace SemanticPipes
             _installedPipes.Add(inputOutputPair, extension);
 
 
-            PipeOutputPackage package = CreatePipeOutputPackage(processCallback);
-            _registryMediator.AppendPackage(package);
 
             return this;
         }
@@ -72,7 +74,7 @@ namespace SemanticPipes
                 return processCallback(castedInput);
             };
 
-            var package = new PipeOutputPackage(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
+            var package = new PipeOutputPackage(1, typeof (TSource), typeof (TDestination), wrappedProcessCallback);
             return package;
         }
 

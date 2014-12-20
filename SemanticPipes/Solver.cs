@@ -108,7 +108,7 @@ namespace SemanticPipes
                 return lastOutputPackage.ProcessInput(o);
             };
 
-            return new PipeOutputPackage(combinedInputType, combinedOutputType, processCombinationCallback);
+            return new PipeOutputPackage(1, combinedInputType, combinedOutputType, processCombinationCallback);
         }
 
         private IEnumerable<PipeOutputPackage> DiscoverPipePackagesAcceptingInputType(Type inputType)
