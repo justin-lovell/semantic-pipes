@@ -1,5 +1,4 @@
 using System;
-using FakeItEasy;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -16,29 +15,35 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void On_WhenNullToSourceParameter_ItShouldThrowArgumentNullException()
+        public void GivenEmptyBroker_WhenResolvingNullSource_ItShouldThrowArgumentNullException()
         {
+            // arrange
             var builder = new SemanticBuilder();
-            var broker = builder.CreateBroker();
+            ISemanticBroker broker = builder.CreateBroker();
 
+            // act
             var argumentNullException = Assert.Throws<ArgumentNullException>(() => broker.On<string>(null));
+
+            // assert
             Assert.AreEqual("source", argumentNullException.ParamName);
         }
 
         [Test]
-        public void On_WhenUsingRegisteredPipelinesAndWeSearchForSolveableComponents_ItShouldTranslate()
+        public void GivenBrokerWithPipeFromObjectAToObjectB_WhenResolving_ItShouldInstantiateThePipe()
         {
+            // pre-arrangement
             var expectedOutputObject = new TestObjectB();
 
+            // arrangement
             var builder = new SemanticBuilder();
             builder.InstallPipe<TestObjectA, TestObjectB>(a => expectedOutputObject);
 
-            var broker = builder.CreateBroker();
+            ISemanticBroker broker = builder.CreateBroker();
 
-
+            // act
             var actualOutputObject = broker.On(new TestObjectA()).Output<TestObjectB>();
 
-
+            // assert
             Assert.AreSame(expectedOutputObject, actualOutputObject);
         }
     }
