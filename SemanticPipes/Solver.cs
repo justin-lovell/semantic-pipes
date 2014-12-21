@@ -4,7 +4,12 @@ using System.Linq;
 
 namespace SemanticPipes
 {
-    internal sealed class Solver
+    internal interface ISolver
+    {
+        PipeOutputPackage SolveAsPipePackage(Type inputType, Type outputType);
+    }
+
+    internal sealed class Solver : ISolver
     {
         private readonly List<IPipeExtension> _pipeExtensions = new List<IPipeExtension>();
 

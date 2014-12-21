@@ -4,9 +4,9 @@ namespace SemanticPipes
 {
     internal sealed class Broker : ISemanticBroker
     {
-        private readonly Solver _solver;
+        private readonly ISolver _solver;
 
-        internal Broker(Solver solver)
+        internal Broker(ISolver solver)
         {
             _solver = solver;
         }
@@ -21,10 +21,10 @@ namespace SemanticPipes
 
         private class SolvingPipe<TSource> : ISemanticOpenPipe
         {
-            private readonly Solver _solver;
+            private readonly ISolver _solver;
             private readonly object _source;
 
-            public SolvingPipe(Solver solver, object source)
+            public SolvingPipe(ISolver solver, object source)
             {
                 _solver = solver;
                 _source = source;
