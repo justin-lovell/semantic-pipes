@@ -84,5 +84,25 @@ namespace SemanticPipes
         {
             return Weight < 256;
         }
+
+        public static PipeOutputPackage Bridge(PipeOutputPackage startPackage, PipeOutputPackage endPackage)
+        {
+            if (startPackage.OutputType != endPackage.InputType)
+            {
+                throw new NotSupportedException();
+            }
+
+            Type sourceType = startPackage.InputType;
+            Type destinationType = endPackage.InputType;
+            int weight = startPackage.ChainingWeight() + endPackage.ChainingWeight();
+
+            Func<object, object> processCallbackFunc = input =>
+            {
+                object intermediate = startPackage.ProcessInput(input);
+                return endPackage.ProcessInput(intermediate);
+            };
+
+            return new PipeOutputPackage(weight, sourceType, destinationType, processCallbackFunc);
+        }
     }
 }

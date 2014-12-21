@@ -11,6 +11,8 @@ namespace SemanticPipes
 
         private readonly KillSwitchObserver _killSwitchObserver = new KillSwitchObserver();
 
+        private readonly ShortestPathRegistryObserver _shortestPathObserver = new ShortestPathRegistryObserver();
+
         private readonly List<ISemanticRegistryObserver> _observers = new List<ISemanticRegistryObserver>();
 
         public RegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
@@ -18,6 +20,7 @@ namespace SemanticPipes
             _observers.Add(_killSwitchObserver);
             _observers.AddRange(observers);
             _observers.Add(_historicalSemanticRegistry);
+            _observers.Add(_shortestPathObserver);
         }
 
         public void AppendObserver(ISemanticRegistryObserver observer)
