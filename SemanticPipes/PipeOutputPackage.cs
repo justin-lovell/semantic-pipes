@@ -4,10 +4,24 @@ namespace SemanticPipes
 {
     public class PipeOutputPackage
     {
+        private const int IncrementChainedWeight = 256;
         private readonly Func<object, object> _processCallbackFunc;
 
-        internal PipeOutputPackage(int weight, Type inputType, Type outputType, Func<object, object> processCallbackFunc)
+        private PipeOutputPackage(int weight, Type inputType, Type outputType, Func<object, object> processCallbackFunc)
         {
+            if (inputType == null)
+            {
+                throw new ArgumentNullException("inputType");
+            }
+            if (outputType == null)
+            {
+                throw new ArgumentNullException("outputType");
+            }
+            if (processCallbackFunc == null)
+            {
+                throw new ArgumentNullException("processCallbackFunc");
+            }
+
             _processCallbackFunc = processCallbackFunc;
             InputType = inputType;
             OutputType = outputType;
@@ -75,14 +89,14 @@ namespace SemanticPipes
             throw new UnexpectedPipePackageOperationException(message);
         }
 
-        public int ChainingWeight()
+        private int NextChainingWeight()
         {
-            return Weight + 256;
+            return Weight + IncrementChainedWeight;
         }
 
         public bool IsFromUserRegistration()
         {
-            return Weight < 256;
+            return Weight < IncrementChainedWeight;
         }
 
         public static PipeOutputPackage Bridge(PipeOutputPackage startPackage, PipeOutputPackage endPackage)
@@ -103,6 +117,19 @@ namespace SemanticPipes
             };
 
             return new PipeOutputPackage(weight, sourceType, destinationType, processCallbackFunc);
+        }
+
+        public static PipeOutputPackage Infer(PipeOutputPackage basedOffPackage, Type inputType, Type outputType,
+            Func<object, object> processCallbackFunc)
+        {
+            int weight = basedOffPackage.NextChainingWeight();
+            return new PipeOutputPackage(weight, inputType, outputType, processCallbackFunc);
+        }
+
+        public static PipeOutputPackage Direct(Type inputType, Type outputType, Func<object, object> processCallbackFunc)
+        {
+            const int weight = 1;
+            return new PipeOutputPackage(weight, inputType, outputType, processCallbackFunc);
         }
     }
 }

@@ -37,8 +37,7 @@ namespace SemanticPipes
                 return processCallback(castedInput);
             };
 
-            var package = new PipeOutputPackage(1, typeof (TSource), typeof (TDestination), wrappedProcessCallback);
-            return package;
+            return PipeOutputPackage.Direct(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
         }
 
         public void RegisterObserver(ISemanticRegistryObserver observer)

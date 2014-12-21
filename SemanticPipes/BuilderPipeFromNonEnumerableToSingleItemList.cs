@@ -13,8 +13,8 @@ namespace SemanticPipes
                 yield break;
             }
 
-            yield return ConvertToDataType(package.InputType, package.ChainingWeight());
-            yield return ConvertToDataType(package.OutputType, package.ChainingWeight());
+            yield return ConvertToDataType(package.InputType, package);
+            yield return ConvertToDataType(package.OutputType, package);
         }
 
         private static bool IsEnumerableType(Type type)
@@ -22,16 +22,17 @@ namespace SemanticPipes
             return typeof(IEnumerable).IsAssignableFrom(type);
         }
 
-        private PipeOutputPackage ConvertToDataType(Type outputType, int weight)
+        private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
         {
-            Type listDestinationType = typeof(List<>).MakeGenericType(outputType);
+            Type outputType = typeof(List<>).MakeGenericType(inputType);
             Func<object, object> processCallbackFunc = o =>
             {
-                var list = (IList) Activator.CreateInstance(listDestinationType);
+                var list = (IList) Activator.CreateInstance(outputType);
                 list.Add(o);
                 return list;
             };
-            return new PipeOutputPackage(weight, outputType, listDestinationType, processCallbackFunc);
+
+            return PipeOutputPackage.Infer(basedOffPackage, inputType, outputType, processCallbackFunc);
         }
     }
 }
