@@ -138,16 +138,6 @@ namespace SemanticPipes
 //            return package.OutputType == outputType;
 //        }
 //
-//        private static void GuardAgainstUnsolveableInputOutputResolution(
-//            Type inputType, Type outputType, PipeOutputPackage solvedPackage)
-//        {
-//            if (solvedPackage != null && solvedPackage.OutputType == outputType) return;
-//
-//            string message = string.Format("The input type '{0}' could not be resolved to output a type of {1}",
-//                inputType, outputType);
-//            throw new CannotResolveSemanticException(message);
-//        }
-//
 //        private void GuardAgainstOperationsWithNoPipePackagesInstalled()
 //        {
 //            if (_pipeExtensions.Count != 0) return;

@@ -23,7 +23,12 @@ namespace SemanticPipes
         public PipeOutputPackage SolveAsPipePackage(Type inputType, Type outputType)
         {
             var key = new Tuple<Type, Type>(inputType, outputType);
-            return _shortestTransistions[key];
+
+            PipeOutputPackage outputPackage;
+
+            _shortestTransistions.TryGetValue(key, out outputPackage);
+            GuardAgainstUnsolveableInputOutputResolution(inputType, outputType, outputPackage);
+            return outputPackage;
         }
 
         private void UpdateShortestPath(PipeOutputPackage package)
@@ -128,6 +133,16 @@ namespace SemanticPipes
             }
 
             return false;
+        }
+
+        private static void GuardAgainstUnsolveableInputOutputResolution(
+            Type inputType, Type outputType, PipeOutputPackage solvedPackage)
+        {
+            if (solvedPackage != null && solvedPackage.OutputType == outputType) return;
+
+            string message = string.Format("The input type '{0}' could not be resolved to output a type of {1}",
+                inputType, outputType);
+            throw new CannotResolveSemanticException(message);
         }
 
         private class TypeComparer : IComparer<Type>

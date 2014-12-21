@@ -23,20 +23,6 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenEmptyRegistry_WhenResolvingToAnyType_ItShouldThrowInvalidRegistryConfigurationException()
-        {
-            var instanceClassA = new TestClassA();
-
-            // arrange
-            var semenaticBuilder = new SemanticBuilder();
-
-            ISemanticBroker broker = semenaticBuilder.CreateBroker();
-
-            // act
-            Assert.Throws<InvalidRegistryConfigurationException>(() => broker.On(instanceClassA).Output<TestClassB>());
-        }
-
-        [Test]
         public void GivenRegistryWithMultiplePipes_WhenResolvingFromAToD_ItShouldChainAllThePipes()
         {
             // pre-arrange
