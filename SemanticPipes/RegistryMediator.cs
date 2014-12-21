@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SemanticPipes
@@ -8,11 +9,14 @@ namespace SemanticPipes
         private readonly HistoricalSemanticRegistryObserver _historicalSemanticRegistry =
             new HistoricalSemanticRegistryObserver();
 
+        private readonly KillSwitchObserver _killSwitchObserver = new KillSwitchObserver();
+
         private readonly List<ISemanticRegistryObserver> _observers = new List<ISemanticRegistryObserver>();
 
         public RegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
         {
-            _observers = observers.ToList();
+            _observers.Add(_killSwitchObserver);
+            _observers.AddRange(observers);
             _observers.Add(_historicalSemanticRegistry);
         }
 
@@ -20,15 +24,31 @@ namespace SemanticPipes
         {
             _observers.Add(observer);
 
-            IEnumerable<PipeOutputPackage> otherPacakgesToInstall =
-                _historicalSemanticRegistry.NotifyObserverOfHistoricalRegistrations(observer);
-            DoPackageInstallations(otherPacakgesToInstall);
+            try
+            {
+                IEnumerable<PipeOutputPackage> otherPacakgesToInstall =
+                    _historicalSemanticRegistry.NotifyObserverOfHistoricalRegistrations(observer);
+                DoPackageInstallations(otherPacakgesToInstall);
+            }
+            catch
+            {
+                _killSwitchObserver.KillSignal();
+                throw;
+            }
         }
 
         public void AppendPackage(PipeOutputPackage package)
         {
-            IEnumerable<PipeOutputPackage> packagesToInsert = new[] {package};
-            DoPackageInstallations(packagesToInsert);
+            try
+            {
+                IEnumerable<PipeOutputPackage> packagesToInsert = new[] {package};
+                DoPackageInstallations(packagesToInsert);
+            }
+            catch (Exception e)
+            {
+                _killSwitchObserver.KillSignal();
+                throw;
+            }
         }
 
         private void DoPackageInstallations(IEnumerable<PipeOutputPackage> packagesToInstall)
@@ -64,6 +84,26 @@ namespace SemanticPipes
                         let morePackages = observer.PipePackageInstalled(historicalPipePackage)
                         where morePackages != null
                         select morePackages).SelectMany(x => x.ToArray());
+            }
+        }
+
+        private sealed class KillSwitchObserver : ISemanticRegistryObserver
+        {
+            private bool _killed;
+
+            public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
+            {
+                if (_killed)
+                {
+                    throw new InvalidProgramException();
+                }
+
+                return null;
+            }
+
+            public void KillSignal()
+            {
+                _killed = true;
             }
         }
     }
