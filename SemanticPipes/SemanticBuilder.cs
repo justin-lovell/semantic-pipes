@@ -80,6 +80,11 @@ namespace SemanticPipes
 
         public void RegisterObserver(ISemanticRegistryObserver observer)
         {
+            if (observer == null)
+            {
+                throw new ArgumentNullException("observer");
+            }
+
             _registryMediator.AppendObserver(observer);
         }
 
