@@ -58,6 +58,7 @@ namespace SemanticPipes
 
             IEnumerable<PipeOutputPackage> bridgingPackages =
                 from ancestorIncomingType in nextIncomingNodes
+                where ancestorIncomingType != package.InputType
                 let transitionKey = new Tuple<Type, Type>(ancestorIncomingType, package.InputType)
                 let incomingPackage = _shortestTransistions[transitionKey]
                 select PipeOutputPackage.Bridge(incomingPackage, package);
@@ -76,6 +77,7 @@ namespace SemanticPipes
 
             IEnumerable<PipeOutputPackage> bridgingPackages =
                 from descendantOutgoingNode in nextOutgoingNodes
+                where descendantOutgoingNode != package.OutputType
                 let transitionKey = new Tuple<Type, Type>(package.OutputType, descendantOutgoingNode)
                 let outgoingPackage = _shortestTransistions[transitionKey]
                 select PipeOutputPackage.Bridge(package, outgoingPackage);
