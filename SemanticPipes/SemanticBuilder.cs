@@ -12,20 +12,20 @@ namespace SemanticPipes
         private readonly RegistryMediator _registryMediator =
             new RegistryMediator(SemanticRegistryObserverFactory.CreateInternalObservers());
 
-        private IEnumerable<PipeExtension> IterateCurrentPipeExtensions()
-        {
-            return _installedPipes.Select(installedPipe => installedPipe.Value);
-        }
+//        private IEnumerable<PipeExtension> IterateCurrentPipeExtensions()
+//        {
+//            return _installedPipes.Select(installedPipe => installedPipe.Value);
+//        }
 
         public ISemanticBroker CreateBroker()
         {
-            var solver = new Solver();
-            IEnumerable<PipeExtension> currentPipeExtensions = IterateCurrentPipeExtensions();
+            var solver = _registryMediator.CreateSolver();
+            //IEnumerable<PipeExtension> currentPipeExtensions = IterateCurrentPipeExtensions();
 
-            foreach (PipeExtension currentPipeExtension in currentPipeExtensions)
-            {
-                solver.Install(currentPipeExtension);
-            }
+//            foreach (PipeExtension currentPipeExtension in currentPipeExtensions)
+//            {
+//                solver.Install(currentPipeExtension);
+//            }
 
             return new Broker(solver);
         }

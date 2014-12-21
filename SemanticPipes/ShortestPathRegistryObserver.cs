@@ -4,18 +4,12 @@ using System.Linq;
 
 namespace SemanticPipes
 {
-    internal class ShortestPathRegistryObserver : ISemanticRegistryObserver
+    internal class ShortestPathRegistryObserver : ISemanticRegistryObserver, ISolver
     {
-//        private readonly Dictionary<Type, List<PipeOutputPackage>> _appendixOfPackagesByOutput =
-//            new Dictionary<Type, List<PipeOutputPackage>>();
-//
-//        private readonly Dictionary<Type, List<PipeOutputPackage>> _appendixOfPackagesByInput =
-//            new Dictionary<Type, List<PipeOutputPackage>>();
+        private static readonly TypeComparer TypeComparerInstance = new TypeComparer();
 
-
+        private readonly Dictionary<Type, List<Type>> _incomingEdges = new Dictionary<Type, List<Type>>();
         private readonly Dictionary<Type, List<Type>> _outgoingEdges = new Dictionary<Type, List<Type>>();
-
-        //private readonly Dictionary<Type, List<Type>> _incomingEdges = new Dictionary<Type, List<Type>>();
 
         private readonly Dictionary<Tuple<Type, Type>, PipeOutputPackage> _shortestTransistions =
             new Dictionary<Tuple<Type, Type>, PipeOutputPackage>();
@@ -24,14 +18,12 @@ namespace SemanticPipes
         {
             UpdateShortestPath(package);
             return null;
+        }
 
-            // todo: curry into new POP's (where existing outputs == package.InputType || inputs == package.Output)
-            // todo: take curried POP and then check if i/o is shorter path to currently known
-
-
-            // todo: register into curry POP (key: output, second key: input)
-            // todo: note: check the weights
-            // todo: possibly recursively update all the curried POP's
+        public PipeOutputPackage SolveAsPipePackage(Type inputType, Type outputType)
+        {
+            var key = new Tuple<Type, Type>(inputType, outputType);
+            return _shortestTransistions[key];
         }
 
         private void UpdateShortestPath(PipeOutputPackage package)
@@ -44,15 +36,28 @@ namespace SemanticPipes
             }
 
             RegisterEdge(_outgoingEdges, package.InputType, package.OutputType);
+            RegisterEdge(_incomingEdges, package.OutputType, package.InputType);
+
             RecursivelySplayOutgoingTransistions(package);
+            RecursivelyBackFillIncomingTransitions(package);
+        }
 
-            // only go into it by "one"
-//                EnrollIntoAppendix(_appendixOfPackagesByOutput, package.OutputType, package);
-//
-//                // only go back by "one"
-//                EnrollIntoAppendix(_appendixOfPackagesByInput, package.InputType, package);
+        private void RecursivelyBackFillIncomingTransitions(PipeOutputPackage package)
+        {
+            List<Type> nextIncomingNodes;
 
-            // recursively Enroll package
+            if (!_incomingEdges.TryGetValue(package.InputType, out nextIncomingNodes))
+            {
+                return;
+            }
+
+            IEnumerable<PipeOutputPackage> bridgingPackages =
+                from ancestorIncomingType in nextIncomingNodes
+                let transitionKey = new Tuple<Type, Type>(ancestorIncomingType, package.InputType)
+                let incomingPackage = _shortestTransistions[transitionKey]
+                select PipeOutputPackage.Bridge(incomingPackage, package);
+
+            RecursivelyUpdateShortestPath(bridgingPackages);
         }
 
         private void RecursivelySplayOutgoingTransistions(PipeOutputPackage package)
@@ -64,13 +69,18 @@ namespace SemanticPipes
                 return;
             }
 
-            var bridgingPackages =
-                from nextOutgoingNode in nextOutgoingNodes
-                let transitionKey = new Tuple<Type, Type>(package.OutputType, nextOutgoingNode)
+            IEnumerable<PipeOutputPackage> bridgingPackages =
+                from descendantOutgoingNode in nextOutgoingNodes
+                let transitionKey = new Tuple<Type, Type>(package.OutputType, descendantOutgoingNode)
                 let outgoingPackage = _shortestTransistions[transitionKey]
                 select PipeOutputPackage.Bridge(package, outgoingPackage);
 
-            foreach (var bridgingPackage in bridgingPackages)
+            RecursivelyUpdateShortestPath(bridgingPackages);
+        }
+
+        private void RecursivelyUpdateShortestPath(IEnumerable<PipeOutputPackage> bridgingPackages)
+        {
+            foreach (PipeOutputPackage bridgingPackage in bridgingPackages)
             {
                 UpdateShortestPath(bridgingPackage);
             }
@@ -88,7 +98,7 @@ namespace SemanticPipes
                 return;
             }
 
-            int binarySearchIndex = listOfDestinationTypes.BinarySearch(destination);
+            int binarySearchIndex = listOfDestinationTypes.BinarySearch(destination, TypeComparerInstance);
 
             if (binarySearchIndex >= 0)
             {
@@ -120,17 +130,12 @@ namespace SemanticPipes
             return false;
         }
 
-//        private static void EnrollIntoAppendix(Dictionary<Type, List<PipeOutputPackage>> appendixOfPackages,
-//            Type lookupType, PipeOutputPackage package)
-//        {
-//            List<PipeOutputPackage> appendix;
-//            if (!appendixOfPackages.TryGetValue(lookupType, out appendix))
-//            {
-//                appendix = new List<PipeOutputPackage>();
-//                appendixOfPackages.Add(lookupType, appendix);
-//            }
-//
-//            appendix.Add(package);
-//        }
+        private class TypeComparer : IComparer<Type>
+        {
+            public int Compare(Type x, Type y)
+            {
+                return x.GetHashCode().CompareTo(y.GetHashCode());
+            }
+        }
     }
 }

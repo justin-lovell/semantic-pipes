@@ -109,5 +109,10 @@ namespace SemanticPipes
                 _killed = true;
             }
         }
+
+        public ISolver CreateSolver()
+        {
+            return _shortestPathObserver;
+        }
     }
 }
