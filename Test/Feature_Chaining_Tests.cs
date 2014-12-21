@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -25,43 +27,50 @@ namespace SemanticPipes
         [Test]
         public void GivenRegistryWithMultiplePipes_WhenResolvingFromAToD_ItShouldChainAllThePipes()
         {
-            // pre-arrange
-            var instanceClassA = new TestClassA();
-            var instanceClassB = new TestClassB();
-            var instanceClassC = new TestClassC();
-            var instanceClassD = new TestClassD();
-
-            // arrange
-            Func<TestClassA, TestClassB> aToB = a =>
+            for (int counter = 0; counter < 15; counter++)
             {
-                Assert.AreSame(instanceClassA, a);
-                return instanceClassB;
-            };
-            Func<TestClassB, TestClassC> bToC = b =>
-            {
-                Assert.AreSame(instanceClassB, b);
-                return instanceClassC;
-            };
-            Func<TestClassC, TestClassD> cToD = c =>
-            {
-                Assert.AreSame(instanceClassC, c);
-                return instanceClassD;
-            };
+                // pre-arrange
+                var instanceClassA = new TestClassA();
+                var instanceClassB = new TestClassB();
+                var instanceClassC = new TestClassC();
+                var instanceClassD = new TestClassD();
 
+                // arrange
+                var semanticBuilder = new SemanticBuilder();
 
-            var semenaticBuilder = new SemanticBuilder();
+                var enrollmentList = new List<Action>()
+                {
+                    () => semanticBuilder.InstallPipe<TestClassA, TestClassB>(a =>
+                    {
+                        Assert.AreSame(instanceClassA, a);
+                        return instanceClassB;
+                    }),
+                    () => semanticBuilder.InstallPipe<TestClassB, TestClassC>(b =>
+                    {
+                        Assert.AreSame(instanceClassB, b);
+                        return instanceClassC;
+                    }),
+                    () => semanticBuilder.InstallPipe<TestClassC, TestClassD>(c =>
+                    {
+                        Assert.AreSame(instanceClassC, c);
+                        return instanceClassD;
+                    }),
+                };
 
-            semenaticBuilder.InstallPipe(aToB);
-            semenaticBuilder.InstallPipe(bToC);
-            semenaticBuilder.InstallPipe(cToD);
+                var enrollmentActions = enrollmentList.OrderBy(x=>Guid.NewGuid());
+                foreach (var enrollmentAction in enrollmentActions)
+                {
+                    enrollmentAction();
+                }
 
-            ISemanticBroker broker = semenaticBuilder.CreateBroker();
+                ISemanticBroker broker = semanticBuilder.CreateBroker();
 
-            // act
-            var solvedExecution = broker.On(instanceClassA).Output<TestClassD>();
+                // act
+                var solvedExecution = broker.On(instanceClassA).Output<TestClassD>();
 
-            // assert
-            Assert.AreEqual(instanceClassD, solvedExecution);
+                // assert
+                Assert.AreEqual(instanceClassD, solvedExecution);
+            }
         }
 
         [Test]
@@ -77,11 +86,11 @@ namespace SemanticPipes
             Func<TestClassA, TestClassC> aToC = a => instanceClassC;
 
 
-            var semenaticBuilder = new SemanticBuilder();
-            semenaticBuilder.InstallPipe(aToB);
-            semenaticBuilder.InstallPipe(aToC);
+            var semanaticBuilder = new SemanticBuilder();
+            semanaticBuilder.InstallPipe(aToB);
+            semanaticBuilder.InstallPipe(aToC);
 
-            ISemanticBroker broker = semenaticBuilder.CreateBroker();
+            ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
             // act
             var solveToB = broker.On(instanceClassA).Output<TestClassB>();
@@ -107,10 +116,10 @@ namespace SemanticPipes
             };
 
 
-            var semenaticBuilder = new SemanticBuilder();
-            semenaticBuilder.InstallPipe(aToB);
+            var semanaticBuilder = new SemanticBuilder();
+            semanaticBuilder.InstallPipe(aToB);
 
-            ISemanticBroker broker = semenaticBuilder.CreateBroker();
+            ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
             // act
             var solvedExecution = broker.On(instanceClassA).Output<TestClassB>();
@@ -129,11 +138,11 @@ namespace SemanticPipes
             Func<TestClassA, TestClassB> aToB = a => new TestClassB();
             Func<TestClassB, TestClassA> bToA = a => new TestClassA();
 
-            var semenaticBuilder = new SemanticBuilder();
-            semenaticBuilder.InstallPipe(aToB);
-            semenaticBuilder.InstallPipe(bToA);
+            var semanaticBuilder = new SemanticBuilder();
+            semanaticBuilder.InstallPipe(aToB);
+            semanaticBuilder.InstallPipe(bToA);
 
-            ISemanticBroker broker = semenaticBuilder.CreateBroker();
+            ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
             // act
             var exception1 =
