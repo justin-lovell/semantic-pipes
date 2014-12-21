@@ -93,7 +93,7 @@ namespace SemanticPipes
             }
 
             Type sourceType = startPackage.InputType;
-            Type destinationType = endPackage.InputType;
+            Type destinationType = endPackage.OutputType;
             int weight = startPackage.Weight + endPackage.Weight;
 
             Func<object, object> processCallbackFunc = input =>
