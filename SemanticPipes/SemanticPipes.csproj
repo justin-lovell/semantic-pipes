@@ -50,7 +50,7 @@
     <Compile Include="RegistryMediator.cs" />
     <Compile Include="SemanticRegistryObserverFactory.cs" />
     <Compile Include="ShortestPathRegistryObserver.cs" />
-    <Compile Include="Solver.cs" />
+    <Compile Include="ISolver.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
   </ItemGroup>
   <ItemGroup>
