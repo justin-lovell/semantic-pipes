@@ -8,8 +8,7 @@ namespace SemanticPipes
         {
             yield return new ReplayPackagesToLateBoundedObserverRegistryObserver();
 
-            // todo: rename the follow classes
-            yield return new BuilderPipeEnsureNoUserDuplication();
+            yield return new EnsureNoDuplicateUserRegistrationObserver();
             yield return new BuilderPipeFromNonEnumerableToSingleItemList();
             // todo: convert to an array
             // todo: walkthrough inheritance chain
