@@ -3,18 +3,13 @@ using System.Linq;
 
 namespace SemanticPipes
 {
-    internal sealed class RegistryMediator : IRegistryMediator
+    internal sealed class ObserverRegistryMediator : IRegistryMediator
     {
-        private readonly ShortestPathRegistryObserver _shortestPathObserver = new ShortestPathRegistryObserver();
-
         private readonly List<ISemanticRegistryObserver> _observers = new List<ISemanticRegistryObserver>();
 
-
-        public RegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
+        public ObserverRegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
         {
             _observers.AddRange(observers);
-            // todo: extract it out as an outside observer
-            _observers.Add(_shortestPathObserver);
         }
 
         public void AppendObserver(ISemanticRegistryObserver observer)
@@ -51,12 +46,6 @@ namespace SemanticPipes
             {
                 DoPackageInstallations(additionalPackagesToInstall);
             }
-        }
-
-        public ISolver CreateSolver()
-        {
-            // todo: extract this class out
-            return _shortestPathObserver;
         }
     }
 }

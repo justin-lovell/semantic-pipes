@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SemanticPipes
 {
-    internal class ShortestPathRegistryObserver : ISemanticRegistryObserver, ISolver
+    internal sealed class ShortestPathGraphBuilder
     {
         private static readonly TypeComparer TypeComparerInstance = new TypeComparer();
 
@@ -14,29 +14,12 @@ namespace SemanticPipes
         private readonly Dictionary<Tuple<Type, Type>, PipeOutputPackage> _shortestTransistions =
             new Dictionary<Tuple<Type, Type>, PipeOutputPackage>();
 
-        public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
+        public IEnumerable<KeyValuePair<Tuple<Type, Type>, PipeOutputPackage>> FetchShortestPathsBySourceToDestination()
         {
-            UpdateShortestPath(package);
-            return null;
+            return _shortestTransistions;
         }
 
-        public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
-        {
-            return null;
-        }
-
-        public PipeOutputPackage SolveAsPipePackage(Type inputType, Type outputType)
-        {
-            var key = new Tuple<Type, Type>(inputType, outputType);
-
-            PipeOutputPackage outputPackage;
-
-            _shortestTransistions.TryGetValue(key, out outputPackage);
-            GuardAgainstUnsolveableInputOutputResolution(inputType, outputType, outputPackage);
-            return outputPackage;
-        }
-
-        private void UpdateShortestPath(PipeOutputPackage package)
+        public void UpdateShortestPath(PipeOutputPackage package)
         {
             bool isShorterPath = RegisterShortestTransistion(package);
 
@@ -105,7 +88,7 @@ namespace SemanticPipes
 
             if (!foundOtherEdges)
             {
-                listOfDestinationTypes = new List<Type> {destination};
+                listOfDestinationTypes = new List<Type> { destination };
                 edges.Add(source, listOfDestinationTypes);
                 return;
             }
@@ -140,16 +123,6 @@ namespace SemanticPipes
             }
 
             return false;
-        }
-
-        private static void GuardAgainstUnsolveableInputOutputResolution(
-            Type inputType, Type outputType, PipeOutputPackage solvedPackage)
-        {
-            if (solvedPackage != null && solvedPackage.OutputType == outputType) return;
-
-            string message = string.Format("The input type '{0}' could not be resolved to output a type of {1}",
-                inputType, outputType);
-            throw new CannotResolveSemanticException(message);
         }
 
         private class TypeComparer : IComparer<Type>

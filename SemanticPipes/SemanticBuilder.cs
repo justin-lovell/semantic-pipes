@@ -1,18 +1,26 @@
 ﻿using System;
+using System.Linq;
 
 namespace SemanticPipes
 {
     public sealed class SemanticBuilder
     {
-        // todo: extract this chain builder out.
-        private readonly IRegistryMediator _registryMediator =
-            new SafetyRegistryMediator(new RegistryMediator(SemanticRegistryObserverFactory.CreateInternalObservers()));
+        private readonly IRegistryMediator _registryMediator;
 
+        private readonly ShortestPathGraphBuilder _graphBuilder;
+
+        public SemanticBuilder()
+        {
+            _graphBuilder = new ShortestPathGraphBuilder();
+
+            var semanticRegistryObservers = SemanticRegistryObserverFactory.CreateInternalObservers();
+            _registryMediator = RegistryMediatorFactory.Create(semanticRegistryObservers, _graphBuilder);
+        }
 
         public ISemanticBroker CreateBroker()
         {
-            // todo: factor out the Solver Creator
-            var solver = _registryMediator.CreateSolver();
+            var graphEdges = _graphBuilder.FetchShortestPathsBySourceToDestination();
+            var solver = new GraphEdgedSolver(graphEdges);
 
             return new Broker(solver);
         }

@@ -19,14 +19,5 @@
         {
             _safetyTrip.DoAction(() => _nextMediator.AppendPackage(package));
         }
-
-        public ISolver CreateSolver()
-        {
-            ISolver solver = null;
-
-            _safetyTrip.DoAction(() => solver = _nextMediator.CreateSolver());
-
-            return solver;
-        }
     }
 }
