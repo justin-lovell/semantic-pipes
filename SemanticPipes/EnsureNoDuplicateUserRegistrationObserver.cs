@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SemanticPipes
 {
-    internal class BuilderPipeEnsureNoUserDuplication : ISemanticRegistryObserver
+    internal class EnsureNoDuplicateUserRegistrationObserver : ISemanticRegistryObserver
     {
         private readonly Dictionary<Tuple<Type, Type>, PipeOutputPackage> _registeredPackages =
             new Dictionary<Tuple<Type, Type>, PipeOutputPackage>();

@@ -4,17 +4,19 @@ using System.Collections.Generic;
 
 namespace SemanticPipes
 {
-    internal sealed class BuilderPipeFromNonEnumerableToSingleItemList : ISemanticRegistryObserver
+    internal sealed class ConvertSingleOutputToEnumerableObserver : ISemanticRegistryObserver
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
-            if (IsEnumerableType(package.InputType) || IsEnumerableType(package.OutputType))
+            if (!IsEnumerableType(package.InputType))
             {
-                yield break;
+                yield return ConvertToDataType(package.InputType, package);
             }
 
-            yield return ConvertToDataType(package.InputType, package);
-            yield return ConvertToDataType(package.OutputType, package);
+            if (!IsEnumerableType(package.OutputType))
+            {
+                yield return ConvertToDataType(package.OutputType, package);
+            }
         }
 
         public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)

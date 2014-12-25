@@ -35,8 +35,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BuilderPipeEnsureNoUserDuplication.cs" />
-    <Compile Include="BuilderPipeFromNonEnumerableToSingleItemList.cs" />
+    <Compile Include="EnsureNoDuplicateUserRegistrationObserver.cs" />
+    <Compile Include="ConvertSingleOutputToEnumerableObserver.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
     <Compile Include="GraphEdgedSolver.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />

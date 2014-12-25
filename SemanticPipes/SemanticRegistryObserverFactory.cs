@@ -9,7 +9,7 @@ namespace SemanticPipes
             yield return new ReplayPackagesToLateBoundedObserverRegistryObserver();
 
             yield return new EnsureNoDuplicateUserRegistrationObserver();
-            yield return new BuilderPipeFromNonEnumerableToSingleItemList();
+            yield return new ConvertSingleOutputToEnumerableObserver();
             // todo: convert to an array
             // todo: walkthrough inheritance chain
             // todo: walkthrough inference chain (for list of generic type)
