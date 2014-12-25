@@ -4,8 +4,9 @@ namespace SemanticPipes
 {
     public sealed class SemanticBuilder
     {
-        private readonly RegistryMediator _registryMediator =
-            new RegistryMediator(SemanticRegistryObserverFactory.CreateInternalObservers());
+        // todo: extract this chain builder out.
+        private readonly IRegistryMediator _registryMediator =
+            new SafetyRegistryMediator(new RegistryMediator(SemanticRegistryObserverFactory.CreateInternalObservers()));
 
 
         public ISemanticBroker CreateBroker()

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SemanticPipes
 {
-    internal sealed class RegistryMediator
+    internal sealed class RegistryMediator : IRegistryMediator
     {
         private readonly HistoricalSemanticRegistryObserver _historicalSemanticRegistry =
             new HistoricalSemanticRegistryObserver();
@@ -12,7 +12,6 @@ namespace SemanticPipes
 
         private readonly List<ISemanticRegistryObserver> _observers = new List<ISemanticRegistryObserver>();
 
-        private readonly SafetyTripGuard _safetyTrip = new SafetyTripGuard();
 
         public RegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
         {
@@ -26,23 +25,17 @@ namespace SemanticPipes
 
         public void AppendObserver(ISemanticRegistryObserver observer)
         {
-            _safetyTrip.DoAction(() =>
-            {
-                _observers.Add(observer);
+            _observers.Add(observer);
 
-                IEnumerable<PipeOutputPackage> otherPacakgesToInstall =
-                    _historicalSemanticRegistry.NotifyObserverOfHistoricalRegistrations(observer);
-                DoPackageInstallations(otherPacakgesToInstall);
-            });
+            IEnumerable<PipeOutputPackage> otherPacakgesToInstall =
+                _historicalSemanticRegistry.NotifyObserverOfHistoricalRegistrations(observer);
+            DoPackageInstallations(otherPacakgesToInstall);
         }
 
         public void AppendPackage(PipeOutputPackage package)
         {
-            _safetyTrip.DoAction(() =>
-            {
-                IEnumerable<PipeOutputPackage> packagesToInsert = new[] { package };
-                DoPackageInstallations(packagesToInsert);
-            });
+            IEnumerable<PipeOutputPackage> packagesToInsert = new[] {package};
+            DoPackageInstallations(packagesToInsert);
         }
 
         private void DoPackageInstallations(IEnumerable<PipeOutputPackage> packagesToInstall)
