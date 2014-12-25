@@ -25,6 +25,11 @@ namespace SemanticPipes
             _registeredPackages.Add(keyToSearchFor, package);
         }
 
+        public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
+        {
+            return null;
+        }
+
         private void RaiseException(Tuple<Type, Type> tuple)
         {
             string message = string.Format("The pipe input of '{0}' to ouput of '{1}' has already been installed.",

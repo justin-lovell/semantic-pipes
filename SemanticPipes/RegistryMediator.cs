@@ -5,9 +5,6 @@ namespace SemanticPipes
 {
     internal sealed class RegistryMediator : IRegistryMediator
     {
-        private readonly HistoricalSemanticRegistryObserver _historicalSemanticRegistry =
-            new HistoricalSemanticRegistryObserver();
-
         private readonly ShortestPathRegistryObserver _shortestPathObserver = new ShortestPathRegistryObserver();
 
         private readonly List<ISemanticRegistryObserver> _observers = new List<ISemanticRegistryObserver>();
@@ -16,20 +13,18 @@ namespace SemanticPipes
         public RegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
         {
             _observers.AddRange(observers);
-
-            // todo: extract this out as a separate class, not observer???
-            _observers.Add(_historicalSemanticRegistry);
             // todo: extract it out as an outside observer
             _observers.Add(_shortestPathObserver);
         }
 
         public void AppendObserver(ISemanticRegistryObserver observer)
         {
-            _observers.Add(observer);
+            foreach (var semanticRegistryObserver in _observers)
+            {
+                DoPackageInstallations(semanticRegistryObserver.SiblingPackageLateBounded(observer));
+            }
 
-            IEnumerable<PipeOutputPackage> otherPacakgesToInstall =
-                _historicalSemanticRegistry.NotifyObserverOfHistoricalRegistrations(observer);
-            DoPackageInstallations(otherPacakgesToInstall);
+            _observers.Add(observer);
         }
 
         public void AppendPackage(PipeOutputPackage package)
@@ -55,27 +50,6 @@ namespace SemanticPipes
             foreach (var additionalPackagesToInstall in listOfAdditionalPackages)
             {
                 DoPackageInstallations(additionalPackagesToInstall);
-            }
-        }
-
-        private sealed class HistoricalSemanticRegistryObserver : ISemanticRegistryObserver
-        {
-            private readonly List<PipeOutputPackage> _pipePackages = new List<PipeOutputPackage>();
-
-            public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
-            {
-                _pipePackages.Add(package);
-                return null;
-            }
-
-            public IEnumerable<PipeOutputPackage> NotifyObserverOfHistoricalRegistrations(
-                ISemanticRegistryObserver observer)
-            {
-                return
-                    (from historicalPipePackage in _pipePackages
-                        let morePackages = observer.PipePackageInstalled(historicalPipePackage)
-                        where morePackages != null
-                        select morePackages).SelectMany(x => x.ToArray());
             }
         }
 

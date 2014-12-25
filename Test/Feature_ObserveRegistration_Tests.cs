@@ -28,6 +28,11 @@ namespace SemanticPipes
             {
                 return _callbackFunc(package);
             }
+
+            public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
+            {
+                return null;
+            }
         }
 
         [Test]
@@ -35,8 +40,6 @@ namespace SemanticPipes
         {
             // pre-arrange
             bool wasEventCalled = false;
-            Type sourceType = null;
-            Type destinationType = null;
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
@@ -46,16 +49,12 @@ namespace SemanticPipes
             var observer = new TestRegistryObserver(package =>
             {
                 wasEventCalled = true;
-                sourceType = package.InputType;
-                destinationType = package.OutputType;
                 return null;
             });
             semanticBuilder.RegisterObserver(observer);
 
             // assert
             Assert.IsTrue(wasEventCalled);
-            Assert.AreEqual(typeof (TestClassA), sourceType);
-            Assert.AreEqual(typeof (TestClassB), destinationType);
         }
 
         [Test]

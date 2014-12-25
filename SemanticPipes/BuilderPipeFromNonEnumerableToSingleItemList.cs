@@ -17,6 +17,11 @@ namespace SemanticPipes
             yield return ConvertToDataType(package.OutputType, package);
         }
 
+        public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
+        {
+            return null;
+        }
+
         private static bool IsEnumerableType(Type type)
         {
             return typeof(IEnumerable).IsAssignableFrom(type);

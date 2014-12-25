@@ -6,6 +6,9 @@ namespace SemanticPipes
     {
         public static IEnumerable<ISemanticRegistryObserver> CreateInternalObservers()
         {
+            yield return new ReplayPackagesToLateBoundedObserverRegistryObserver();
+
+            // todo: rename the follow classes
             yield return new BuilderPipeEnsureNoUserDuplication();
             yield return new BuilderPipeFromNonEnumerableToSingleItemList();
             // todo: convert to an array

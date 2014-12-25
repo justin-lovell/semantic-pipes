@@ -20,6 +20,11 @@ namespace SemanticPipes
             return null;
         }
 
+        public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
+        {
+            return null;
+        }
+
         public PipeOutputPackage SolveAsPipePackage(Type inputType, Type outputType)
         {
             var key = new Tuple<Type, Type>(inputType, outputType);
