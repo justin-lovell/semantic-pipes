@@ -13,7 +13,7 @@ namespace SemanticPipes
         {
             _graphBuilder = new ShortestPathGraphBuilder();
 
-            var semanticRegistryObservers = SemanticRegistryObserverFactory.CreateInternalObservers();
+            var semanticRegistryObservers = SemanticRegistryObserverFactory.CreateObservers();
             _registryMediator = RegistryMediatorFactory.Create(semanticRegistryObservers, _graphBuilder);
         }
 
