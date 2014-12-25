@@ -46,6 +46,7 @@
     <Compile Include="PipeOutputPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Broker.cs" />
+    <Compile Include="SafetyTripGuard.cs" />
     <Compile Include="SemanticBuilder.cs" />
     <Compile Include="RegistryMediator.cs" />
     <Compile Include="SemanticRegistryObserverFactory.cs" />

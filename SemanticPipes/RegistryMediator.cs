@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SemanticPipes
@@ -9,58 +8,55 @@ namespace SemanticPipes
         private readonly HistoricalSemanticRegistryObserver _historicalSemanticRegistry =
             new HistoricalSemanticRegistryObserver();
 
-        private readonly KillSwitchObserver _killSwitchObserver = new KillSwitchObserver();
-
         private readonly ShortestPathRegistryObserver _shortestPathObserver = new ShortestPathRegistryObserver();
 
         private readonly List<ISemanticRegistryObserver> _observers = new List<ISemanticRegistryObserver>();
 
+        private readonly SafetyTripGuard _safetyTrip = new SafetyTripGuard();
+
         public RegistryMediator(IEnumerable<ISemanticRegistryObserver> observers)
         {
-            _observers.Add(_killSwitchObserver);
             _observers.AddRange(observers);
+
+            // todo: extract this out as a separate class, not observer???
             _observers.Add(_historicalSemanticRegistry);
+            // todo: extract it out as an outside observer
             _observers.Add(_shortestPathObserver);
         }
 
         public void AppendObserver(ISemanticRegistryObserver observer)
         {
-            _observers.Add(observer);
-
-            try
+            _safetyTrip.DoAction(() =>
             {
+                _observers.Add(observer);
+
                 IEnumerable<PipeOutputPackage> otherPacakgesToInstall =
                     _historicalSemanticRegistry.NotifyObserverOfHistoricalRegistrations(observer);
                 DoPackageInstallations(otherPacakgesToInstall);
-            }
-            catch
-            {
-                _killSwitchObserver.KillSignal();
-                throw;
-            }
+            });
         }
 
         public void AppendPackage(PipeOutputPackage package)
         {
-            try
+            _safetyTrip.DoAction(() =>
             {
-                IEnumerable<PipeOutputPackage> packagesToInsert = new[] {package};
+                IEnumerable<PipeOutputPackage> packagesToInsert = new[] { package };
                 DoPackageInstallations(packagesToInsert);
-            }
-            catch (Exception e)
-            {
-                _killSwitchObserver.KillSignal();
-                throw;
-            }
+            });
         }
 
         private void DoPackageInstallations(IEnumerable<PipeOutputPackage> packagesToInstall)
         {
+            if (packagesToInstall == null)
+            {
+                return;
+            }
+
             IEnumerable<IEnumerable<PipeOutputPackage>> listOfAdditionalPackages =
                 from installingPackages in packagesToInstall
+                where installingPackages != null
                 from observer in _observers
                 let morePackages = observer.PipePackageInstalled(installingPackages)
-                where morePackages != null
                 select morePackages;
 
             foreach (var additionalPackagesToInstall in listOfAdditionalPackages)
@@ -90,28 +86,9 @@ namespace SemanticPipes
             }
         }
 
-        private sealed class KillSwitchObserver : ISemanticRegistryObserver
-        {
-            private bool _killed;
-
-            public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
-            {
-                if (_killed)
-                {
-                    throw new InvalidProgramException();
-                }
-
-                return null;
-            }
-
-            public void KillSignal()
-            {
-                _killed = true;
-            }
-        }
-
         public ISolver CreateSolver()
         {
+            // todo: extract this class out
             return _shortestPathObserver;
         }
     }

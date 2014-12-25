@@ -10,6 +10,7 @@ namespace SemanticPipes
 
         public ISemanticBroker CreateBroker()
         {
+            // todo: factor out the Solver Creator
             var solver = _registryMediator.CreateSolver();
 
             return new Broker(solver);
