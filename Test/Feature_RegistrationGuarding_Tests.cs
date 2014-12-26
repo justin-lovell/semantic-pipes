@@ -25,13 +25,13 @@ namespace SemanticPipes
             // arrange
             var semanticBuilder = new SemanticBuilder();
 
-            semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null);
-            semanticBuilder.InstallPipe<TestClassA, TestClassC>(a => null);
-            semanticBuilder.InstallPipe<TestClassB, TestClassA>(b => null);
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => null);
+            semanticBuilder.InstallPipe<TestClassA, TestClassC>((a, innerBroker) => null);
+            semanticBuilder.InstallPipe<TestClassB, TestClassA>((b, innerBroker) => null);
 
             // act
             Assert.Throws<InvalidRegistryConfigurationException>(
-                () => semanticBuilder.InstallPipe<TestClassA, TestClassB>(a => null));
+                () => semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => null));
         }
     }
 }

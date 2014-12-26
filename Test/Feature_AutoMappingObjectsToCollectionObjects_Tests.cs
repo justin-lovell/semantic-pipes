@@ -16,24 +16,49 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenTwoClasses_WhenSolvingSingleClassToCollection_ItShouldResolve()
+        public void GivenAtoArrayB_WhenSolvingSingleAToArraytA_ItShouldResolve()
         {
             // pre-arrangement
-            var expectedReturnObject = new TestObjectB();
+            var expectedReturnObject = new TestObjectA();
+
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>(source => expectedReturnObject);
+            semanticBuilder.InstallPipe<TestObjectA, TestObjectB[]>((source, innerBroker) => new[] {new TestObjectB()});
 
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(new TestObjectA())
-                .Output<IEnumerable<TestObjectB>>();
+            var enumerable = semanticBroker.On(expectedReturnObject)
+                .Output<TestObjectA[]>();
 
 
             // assert
-            TestObjectB returnedType = enumerable.Single();
+            TestObjectA returnedType = enumerable.Single();
+            Assert.AreSame(expectedReturnObject, returnedType);
+        }
+
+        [Test]
+        public void GivenAtoListB_WhenSolvingSingleAToListA_ItShouldResolve()
+        {
+            // pre-arrangement
+            var expectedReturnObject = new TestObjectA();
+
+
+            // arrange
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.InstallPipe<TestObjectA, List<TestObjectB>>(
+                (source, innerBroker) => new List<TestObjectB> {new TestObjectB()});
+
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+
+            // act
+            var enumerable = semanticBroker.On(expectedReturnObject)
+                .Output<List<TestObjectA>>();
+
+
+            // assert
+            TestObjectA returnedType = enumerable.Single();
             Assert.AreSame(expectedReturnObject, returnedType);
         }
 
@@ -45,13 +70,35 @@ namespace SemanticPipes
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>(source => expectedReturnObject);
+            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>((source, innerBroker) => expectedReturnObject);
 
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
             var enumerable = semanticBroker.On(new TestObjectA())
                 .Output<TestObjectB[]>();
+
+
+            // assert
+            TestObjectB returnedType = enumerable.Single();
+            Assert.AreSame(expectedReturnObject, returnedType);
+        }
+
+        [Test]
+        public void GivenTwoClasses_WhenSolvingSingleClassToCollection_ItShouldResolve()
+        {
+            // pre-arrangement
+            var expectedReturnObject = new TestObjectB();
+
+            // arrange
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>((source, innerBroker) => expectedReturnObject);
+
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+
+            // act
+            var enumerable = semanticBroker.On(new TestObjectA())
+                .Output<IEnumerable<TestObjectB>>();
 
 
             // assert
@@ -67,7 +114,7 @@ namespace SemanticPipes
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>(source => expectedReturnObject);
+            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>((source, innerBroker) => expectedReturnObject);
 
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
@@ -78,53 +125,6 @@ namespace SemanticPipes
 
             // assert
             TestObjectB returnedType = enumerable.Single();
-            Assert.AreSame(expectedReturnObject, returnedType);
-        }
-
-        [Test]
-        public void GivenAtoListB_WhenSolvingSingleAToListA_ItShouldResolve()
-        {
-            // pre-arrangement
-            var expectedReturnObject = new TestObjectA();
-
-
-            // arrange
-            var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestObjectA, List<TestObjectB>>(
-                source => new List<TestObjectB> {new TestObjectB()});
-
-            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
-
-            // act
-            var enumerable = semanticBroker.On(expectedReturnObject)
-                .Output<List<TestObjectA>>();
-
-
-            // assert
-            var returnedType = enumerable.Single();
-            Assert.AreSame(expectedReturnObject, returnedType);
-        }
-
-        [Test]
-        public void GivenAtoArrayB_WhenSolvingSingleAToArraytA_ItShouldResolve()
-        {
-            // pre-arrangement
-            var expectedReturnObject = new TestObjectA();
-
-
-            // arrange
-            var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestObjectA, TestObjectB[]>(source => new[] {new TestObjectB()});
-
-            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
-
-            // act
-            var enumerable = semanticBroker.On(expectedReturnObject)
-                .Output<TestObjectA[]>();
-
-
-            // assert
-            var returnedType = enumerable.Single();
             Assert.AreSame(expectedReturnObject, returnedType);
         }
     }

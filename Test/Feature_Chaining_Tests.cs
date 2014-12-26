@@ -38,19 +38,19 @@ namespace SemanticPipes
                 // arrange
                 var semanticBuilder = new SemanticBuilder();
 
-                var enrollmentList = new List<Action>()
+                var enrollmentList = new List<Action>
                 {
-                    () => semanticBuilder.InstallPipe<TestClassA, TestClassB>(a =>
+                    () => semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) =>
                     {
                         Assert.AreSame(instanceClassA, a);
                         return instanceClassB;
                     }),
-                    () => semanticBuilder.InstallPipe<TestClassB, TestClassC>(b =>
+                    () => semanticBuilder.InstallPipe<TestClassB, TestClassC>((b, innerBroker) =>
                     {
                         Assert.AreSame(instanceClassB, b);
                         return instanceClassC;
                     }),
-                    () => semanticBuilder.InstallPipe<TestClassC, TestClassD>(c =>
+                    () => semanticBuilder.InstallPipe<TestClassC, TestClassD>((c, innerBroker) =>
                     {
                         Assert.AreSame(instanceClassC, c);
                         return instanceClassD;
@@ -82,13 +82,9 @@ namespace SemanticPipes
             var instanceClassC = new TestClassC();
 
             // arrange
-            Func<TestClassA, TestClassB> aToB = a => instanceClassB;
-            Func<TestClassA, TestClassC> aToC = a => instanceClassC;
-
-
             var semanaticBuilder = new SemanticBuilder();
-            semanaticBuilder.InstallPipe(aToB);
-            semanaticBuilder.InstallPipe(aToC);
+            semanaticBuilder.InstallPipe<TestClassA, TestClassB>((a, semanticBroker) => instanceClassB);
+            semanaticBuilder.InstallPipe<TestClassA, TestClassC>((a, semanticBroker) => instanceClassC);
 
             ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
@@ -109,15 +105,12 @@ namespace SemanticPipes
             var instanceClassB = new TestClassB();
 
             // arrange
-            Func<TestClassA, TestClassB> aToB = a =>
+            var semanaticBuilder = new SemanticBuilder();
+            semanaticBuilder.InstallPipe<TestClassA, TestClassB>((a, semanticBroker) =>
             {
                 Assert.AreSame(instanceClassA, a);
                 return instanceClassB;
-            };
-
-
-            var semanaticBuilder = new SemanticBuilder();
-            semanaticBuilder.InstallPipe(aToB);
+            });
 
             ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
@@ -135,12 +128,9 @@ namespace SemanticPipes
             var instanceClassC = new TestClassC();
 
             // arrange
-            Func<TestClassA, TestClassB> aToB = a => new TestClassB();
-            Func<TestClassB, TestClassA> bToA = a => new TestClassA();
-
             var semanaticBuilder = new SemanticBuilder();
-            semanaticBuilder.InstallPipe(aToB);
-            semanaticBuilder.InstallPipe(bToA);
+            semanaticBuilder.InstallPipe<TestClassA, TestClassB>((a, semanticBroker) => new TestClassB());
+            semanaticBuilder.InstallPipe<TestClassB, TestClassA>((b, semanticBroker) => new TestClassA());
 
             ISemanticBroker broker = semanaticBuilder.CreateBroker();
 

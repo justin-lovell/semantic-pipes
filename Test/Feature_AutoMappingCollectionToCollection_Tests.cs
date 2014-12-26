@@ -24,7 +24,7 @@ namespace SemanticPipes
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>(source =>
+            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>((source, innerBroker) =>
             {
                 counter++;
                 return expectedReturnObject;

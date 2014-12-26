@@ -36,7 +36,7 @@ namespace SemanticPipes
 
             // arrangement
             var builder = new SemanticBuilder();
-            builder.InstallPipe<TestClassA, TestClassB>(a => expectedOutputObject);
+            builder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => expectedOutputObject);
 
             ISemanticBroker broker = builder.CreateBroker();
 
@@ -58,7 +58,7 @@ namespace SemanticPipes
             // arrange
             var semanticBuilder = new SemanticBuilder();
 
-            Func<TestClassA, TestClassB> processCallback = a =>
+            Func<TestClassA, ISemanticBroker, TestClassB> processCallback = (a, innerBroker) =>
             {
                 Assert.AreSame(expectedTestClassA, a);
                 return expectedTestClassB;

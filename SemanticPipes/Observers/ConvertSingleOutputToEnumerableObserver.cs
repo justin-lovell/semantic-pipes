@@ -36,10 +36,10 @@ namespace SemanticPipes.Observers
 
         private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
         {
-            Func<object, object> processCallbackFunc = o =>
+            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) =>
             {
                 Array array = Array.CreateInstance(inputType, 1);
-                array.SetValue(o, 0);
+                array.SetValue(input, 0);
                 return array;
             };
 

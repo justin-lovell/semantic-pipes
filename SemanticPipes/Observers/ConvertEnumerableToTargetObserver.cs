@@ -48,7 +48,8 @@ namespace SemanticPipes.Observers
 
             Type outputType = _strategy.CreateTargetOutputType(elementType);
             MethodInfo closedToArrayMethodInfo = _strategy.ClosedGenericMethodInfo(elementType);
-            Func<object, object> processCallback = o => closedToArrayMethodInfo.Invoke(o, new[] {o});
+            Func<object, ISemanticBroker, object> processCallback =
+                (input, broker) => closedToArrayMethodInfo.Invoke(input, new[] {input});
 
             return PipeOutputPackage.Infer(package, inputType, outputType, processCallback);
         }

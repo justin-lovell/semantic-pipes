@@ -26,12 +26,12 @@ namespace SemanticPipes.Observers
 
             Type inputType = typeof (IEnumerable<>).MakeGenericType(package.InputType);
             Type outputType = typeof (IEnumerable<>).MakeGenericType(package.OutputType);
-            Func<object, object> processCallbackFunc = rawInputStream =>
+            Func<object, ISemanticBroker, object> processCallbackFunc = (rawInputStream, broker) =>
             {
                 var inputEnumerable = (IEnumerable) rawInputStream;
                 IEnumerable<object> pipe =
                     from input in inputEnumerable.Cast<object>()
-                    select package.ProcessInput(input);
+                    select package.ProcessInput(input, broker);
 
                 return castingMethodInfo.Invoke(pipe, new object[] {pipe});
             };

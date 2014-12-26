@@ -25,7 +25,7 @@ namespace SemanticPipes
             return new Broker(solver);
         }
 
-        public SemanticBuilder InstallPipe<TSource, TDestination>(Func<TSource, TDestination> processCallback)
+        public SemanticBuilder InstallPipe<TSource, TDestination>(Func<TSource, ISemanticBroker, TDestination> processCallback)
         {
             if (processCallback == null)
             {
@@ -39,12 +39,12 @@ namespace SemanticPipes
         }
 
         private static PipeOutputPackage CreatePipeOutputPackage<TSource, TDestination>(
-            Func<TSource, TDestination> processCallback)
+            Func<TSource, ISemanticBroker, TDestination> processCallback)
         {
-            Func<object, object> wrappedProcessCallback = rawInput =>
+            Func<object, ISemanticBroker, object> wrappedProcessCallback = (input, broker) =>
             {
-                var castedInput = (TSource) rawInput;
-                return processCallback(castedInput);
+                var castedInput = (TSource) input;
+                return processCallback(castedInput, broker);
             };
 
             return PipeOutputPackage.Direct(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
