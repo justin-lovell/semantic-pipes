@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SemanticPipes
 {
-    internal class AdvertiseOutputInheritanceChainObserver : ISemanticRegistryObserver
+    internal sealed class AdvertiseOutputInheritanceChainObserver : ISemanticRegistryObserver
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {

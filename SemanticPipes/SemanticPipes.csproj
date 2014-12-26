@@ -62,6 +62,7 @@
     <Compile Include="ShortestPathGraphBuilder.cs" />
     <Compile Include="ShortestPathGraphBuilderAdapterRegistryObserver.cs" />
     <Compile Include="ISolver.cs" />
+    <Compile Include="TypeHelperExtensions.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -8,14 +8,14 @@ namespace SemanticPipes
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
-            if (IsEnumerableType(package.OutputType))
+            if (package.OutputType.IsEnumerable())
             {
                 yield break;
             }
 
             yield return ConvertToDataType(package.OutputType, package);
 
-            if (!IsEnumerableType(package.InputType))
+            if (!package.InputType.IsEnumerable())
             {
                 yield return ConvertToDataType(package.InputType, package);
             }
@@ -24,11 +24,6 @@ namespace SemanticPipes
         public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
         {
             return null;
-        }
-
-        private static bool IsEnumerableType(Type type)
-        {
-            return typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
