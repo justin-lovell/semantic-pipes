@@ -16,7 +16,9 @@ namespace SemanticPipes
         {
             return
                 from observer in _observers
-                from additionalPackage in observer.PipePackageInstalled(package)
+                let newPackagesToInstall = observer.PipePackageInstalled(package)
+                where newPackagesToInstall != null
+                from additionalPackage in newPackagesToInstall
                 select additionalPackage;
         }
 
@@ -24,7 +26,9 @@ namespace SemanticPipes
         {
             return
                 from observer in _observers
-                from additionalPackage in observer.SiblingPackageLateBounded(siblingObserver)
+                let newPackagesToInstall = observer.SiblingPackageLateBounded(siblingObserver)
+                where newPackagesToInstall != null
+                from additionalPackage in newPackagesToInstall
                 select additionalPackage;
         }
     }

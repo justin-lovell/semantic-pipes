@@ -36,5 +36,27 @@ namespace SemanticPipes
             TestObjectB returnedType = enumerable.Single();
             Assert.AreSame(expectedReturnObject, returnedType);
         }
+
+        [Test]
+        public void GivenTwoClasses_WhenSolvingSingleClassToArray_ItShouldResolve()
+        {
+            // pre-arrangement
+            var expectedReturnObject = new TestObjectB();
+
+            // arrange
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.InstallPipe<TestObjectA, TestObjectB>(source => expectedReturnObject);
+
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+
+            // act
+            var enumerable = semanticBroker.On(new TestObjectA())
+                .Output<TestObjectB[]>();
+
+
+            // assert
+            TestObjectB returnedType = enumerable.Single();
+            Assert.AreSame(expectedReturnObject, returnedType);
+        }
     }
 }

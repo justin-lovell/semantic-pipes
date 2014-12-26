@@ -16,7 +16,8 @@ namespace SemanticPipes
         {
             foreach (var semanticRegistryObserver in _observers)
             {
-                DoPackageInstallations(semanticRegistryObserver.SiblingPackageLateBounded(observer));
+                var siblingPackageLateBounded = semanticRegistryObserver.SiblingPackageLateBounded(observer);
+                DoPackageInstallations(siblingPackageLateBounded);
             }
 
             _observers.Add(observer);

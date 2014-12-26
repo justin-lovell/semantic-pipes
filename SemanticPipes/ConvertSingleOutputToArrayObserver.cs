@@ -4,18 +4,26 @@ using System.Collections.Generic;
 
 namespace SemanticPipes
 {
-    internal sealed class ConvertSingleOutputToEnumerableObserver : ISemanticRegistryObserver
+    internal class ConvertSingleOutputToArrayObserver : ISemanticRegistryObserver
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
-            if (IsEnumerableType(package.OutputType))
+            if (package.OutputType.IsArray)
+            {
+                yield break;
+            }
+
+            var isOutputEnumerable = IsEnumerableType(package.OutputType);
+
+            if (isOutputEnumerable)
             {
                 yield break;
             }
 
             yield return ConvertToDataType(package.OutputType, package);
 
-            if (!IsEnumerableType(package.InputType))
+            var isInputEnumerable = IsEnumerableType(package.InputType);
+            if (!isInputEnumerable)
             {
                 yield return ConvertToDataType(package.InputType, package);
             }
@@ -28,17 +36,22 @@ namespace SemanticPipes
 
         private static bool IsEnumerableType(Type type)
         {
-            return typeof(IEnumerable).IsAssignableFrom(type);
+            return typeof (IEnumerable).IsAssignableFrom(type);
         }
 
         private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
         {
-            Type outputType = typeof(List<>).MakeGenericType(inputType);
-            Func<object, object> processCallbackFunc = o =>
+            if (!inputType.IsClass)
             {
-                var list = (IList) Activator.CreateInstance(outputType);
-                list.Add(o);
-                return list;
+                return null;
+            }
+
+            Type outputType = inputType.MakeArrayType();
+            Func<object, object> processCallbackFunc = value =>
+            {
+                Array instance = Array.CreateInstance(inputType, 1);
+                instance.SetValue(value, 0);
+                return instance;
             };
 
             return PipeOutputPackage.Infer(basedOffPackage, inputType, outputType, processCallbackFunc);

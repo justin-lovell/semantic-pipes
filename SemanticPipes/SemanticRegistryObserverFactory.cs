@@ -10,8 +10,8 @@ namespace SemanticPipes
             yield return new EnsureNoDuplicateUserRegistrationObserver();
 
 
-            var scaffolodingObservers = CreateScaffoldingObservers();
-            var collectiveObserverForScaffolding = new CollectiveSemanticRegistryObserver(scaffolodingObservers);
+            var scaffoldingObservers = CreateScaffoldingObservers();
+            var collectiveObserverForScaffolding = new CollectiveSemanticRegistryObserver(scaffoldingObservers);
             yield return new MemorisedChainBuilderRegistryBuilder(collectiveObserverForScaffolding);
         }
 
@@ -19,9 +19,8 @@ namespace SemanticPipes
         {
             yield return new AdvertiseOutputInheritanceChainObserver();
             yield return new ConvertSingleOutputToEnumerableObserver();
+            yield return new ConvertSingleOutputToArrayObserver();
 
-            // todo: convert to an array
-            // todo: walkthrough inheritance chain
             // todo: walkthrough inference chain (for list of generic type)
         }
     }
