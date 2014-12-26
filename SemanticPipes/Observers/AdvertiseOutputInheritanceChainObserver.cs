@@ -9,6 +9,11 @@ namespace SemanticPipes.Observers
         {
             Type outputType = package.OutputType;
 
+            if (outputType.IsEnumerable())
+            {
+                yield break;
+            }
+
             if (outputType.BaseType != null && outputType.BaseType != typeof (object))
             {
                 yield return CreateReturnPackage(package, outputType.BaseType);
