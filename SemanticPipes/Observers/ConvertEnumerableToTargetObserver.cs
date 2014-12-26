@@ -1,29 +1,34 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace SemanticPipes.Observers
 {
-    internal sealed class ConvertEnumerableToArrayObserver : ISemanticRegistryObserver
+    internal sealed class ConvertEnumerableToTargetObserver : ISemanticRegistryObserver
     {
+        private readonly IEnumberableConversionStrategy _strategy;
+
+        public ConvertEnumerableToTargetObserver(IEnumberableConversionStrategy strategy)
+        {
+            _strategy = strategy;
+        }
 
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
-            if (package.OutputType.IsArray)
+            if (!_strategy.ShouldExpandUponIncomingPackage(package))
             {
                 yield break;
             }
 
             if (package.InputType.IsEnumerable())
             {
-                yield return ProcessTypeIntoArray(package.InputType, package);
+                yield return ProcessType(package.InputType, package);
             }
 
             if (package.OutputType.IsEnumerable())
             {
-                yield return ProcessTypeIntoArray(package.OutputType, package);
+                yield return ProcessType(package.OutputType, package);
             }
         }
 
@@ -32,7 +37,7 @@ namespace SemanticPipes.Observers
             return null;
         }
 
-        private PipeOutputPackage ProcessTypeIntoArray(Type inputType, PipeOutputPackage package)
+        private PipeOutputPackage ProcessType(Type inputType, PipeOutputPackage package)
         {
             Type elementType = ExtractElementType(inputType);
 
@@ -41,12 +46,11 @@ namespace SemanticPipes.Observers
                 return null;
             }
 
-            Type arrayType = elementType.MakeArrayType();
-            MethodInfo genericToArrayMethodInfo = typeof(Enumerable).GetMethod("ToArray");
-            MethodInfo closedToArrayMethodInfo = genericToArrayMethodInfo.MakeGenericMethod(elementType);
+            Type outputType = _strategy.CreateTargetOutputType(elementType);
+            MethodInfo closedToArrayMethodInfo = _strategy.ClosedGenericMethodInfo(elementType);
             Func<object, object> processCallback = o => closedToArrayMethodInfo.Invoke(o, new[] {o});
 
-            return PipeOutputPackage.Infer(package, inputType, arrayType, processCallback);
+            return PipeOutputPackage.Infer(package, inputType, outputType, processCallback);
         }
 
         private Type ExtractElementType(Type inputType)
