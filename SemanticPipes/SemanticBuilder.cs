@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SemanticPipes.Observers;
 
 namespace SemanticPipes
@@ -41,10 +42,12 @@ namespace SemanticPipes
         private static PipeOutputPackage CreatePipeOutputPackage<TSource, TDestination>(
             Func<TSource, ISemanticBroker, TDestination> processCallback)
         {
-            Func<object, ISemanticBroker, object> wrappedProcessCallback = (input, broker) =>
+            PipeCallback wrappedProcessCallback = (input, broker) =>
             {
                 var castedInput = (TSource) input;
-                return processCallback(castedInput, broker);
+                object result = processCallback(castedInput, broker);
+
+                return Task.FromResult(result);
             };
 
             return PipeOutputPackage.Direct(typeof (TSource), typeof (TDestination), wrappedProcessCallback);

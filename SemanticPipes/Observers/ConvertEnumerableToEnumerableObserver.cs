@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SemanticPipes.Observers
 {
@@ -26,14 +27,15 @@ namespace SemanticPipes.Observers
 
             Type inputType = typeof (IEnumerable<>).MakeGenericType(package.InputType);
             Type outputType = typeof (IEnumerable<>).MakeGenericType(package.OutputType);
-            Func<object, ISemanticBroker, object> processCallbackFunc = (rawInputStream, broker) =>
+            PipeCallback processCallbackFunc = async (rawInputStream, broker) =>
             {
                 var inputEnumerable = (IEnumerable) rawInputStream;
-                IEnumerable<object> pipe =
+                var pipe =
                     from input in inputEnumerable.Cast<object>()
                     select package.ProcessInput(input, broker);
 
-                return castingMethodInfo.Invoke(pipe, new object[] {pipe});
+                var results = await Task.WhenAll(pipe);
+                return castingMethodInfo.Invoke(results, new object[] {results});
             };
             yield return PipeOutputPackage.Infer(package, inputType, outputType, processCallbackFunc);
         }

@@ -137,9 +137,9 @@ namespace SemanticPipes
 
             // act
             var exception1 =
-                Assert.Throws<CannotResolveSemanticException>(() => broker.On(instanceClassA).Output<TestClassC>());
+                Assert.Throws<CannotResolveSemanticException>(async () => await broker.On(instanceClassA).Output<TestClassC>());
             var exception2 =
-                Assert.Throws<CannotResolveSemanticException>(() => broker.On(instanceClassC).Output<TestClassA>());
+                Assert.Throws<CannotResolveSemanticException>(async () => await broker.On(instanceClassC).Output<TestClassA>());
 
             // assert
             string expectedExceptionMessage1 =

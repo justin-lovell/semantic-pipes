@@ -33,13 +33,12 @@ namespace SemanticPipes
                 _broker = broker;
             }
 
-            public Task<TDestination> Output<TDestination>()
+            public async Task<TDestination> Output<TDestination>()
             {
                 PipeOutputPackage solvedPipePackage = _solver.SolveAsPipePackage(typeof (TSource), typeof (TDestination));
-                object processedOutput = solvedPipePackage.ProcessInput(_source, _broker);
+                object processedOutput = await solvedPipePackage.ProcessInput(_source, _broker);
 
-                var result = (TDestination) processedOutput;
-                return Task.FromResult(result);
+                return (TDestination) processedOutput;
             }
         }
     }

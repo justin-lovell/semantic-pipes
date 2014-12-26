@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SemanticPipes.Observers
 {
@@ -36,11 +37,11 @@ namespace SemanticPipes.Observers
 
         private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
         {
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) =>
+            PipeCallback processCallbackFunc = (input, broker) =>
             {
                 Array array = Array.CreateInstance(inputType, 1);
                 array.SetValue(input, 0);
-                return array;
+                return Task.FromResult((object)array);
             };
 
             Type outputType = typeof (IEnumerable<>).MakeGenericType(inputType);

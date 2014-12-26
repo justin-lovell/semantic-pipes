@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SemanticPipes
 {
+    public delegate Task<object> PipeCallback(object input, ISemanticBroker broker);
+
     public class PipeOutputPackage
     {
         private const int IncrementChainedWeight = 256;
-        private readonly Func<object, ISemanticBroker, object> _processCallbackFunc;
+        private readonly PipeCallback _processCallbackFunc;
 
-        private PipeOutputPackage(int weight, Type inputType, Type outputType, Func<object, ISemanticBroker, object> processCallbackFunc)
+        private PipeOutputPackage(int weight, Type inputType, Type outputType, PipeCallback processCallbackFunc)
         {
             if (inputType == null)
             {
@@ -32,7 +35,7 @@ namespace SemanticPipes
         public Type InputType { get; private set; }
         public int Weight { get; private set; }
 
-        public object ProcessInput(object input, ISemanticBroker semanticBroker)
+        public async Task<object> ProcessInput(object input, ISemanticBroker semanticBroker)
         {
             if (input == null)
             {
@@ -41,7 +44,10 @@ namespace SemanticPipes
 
             GuardAgainstUnexpectedInputType(input);
 
-            object output = _processCallbackFunc(input, semanticBroker);
+            var processingTask = _processCallbackFunc(input, semanticBroker);
+            GuardAgainstNullResultFromCallback(processingTask);
+
+            object output = await processingTask;
 
             GuardAgainstNullResultFromCallback(output);
             GuardAgainstUnexpectedReturnTypeFromCallback(output);
@@ -110,23 +116,23 @@ namespace SemanticPipes
             Type destinationType = endPackage.OutputType;
             int weight = startPackage.Weight + endPackage.Weight;
 
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) =>
+            PipeCallback processCallbackFunc = async (input, broker) =>
             {
-                object intermediate = startPackage.ProcessInput(input, broker);
-                return endPackage.ProcessInput(intermediate, broker);
+                object intermediate = await startPackage.ProcessInput(input, broker);
+                return await endPackage.ProcessInput(intermediate, broker);
             };
 
             return new PipeOutputPackage(weight, sourceType, destinationType, processCallbackFunc);
         }
 
         public static PipeOutputPackage Infer(PipeOutputPackage basedOffPackage, Type inputType, Type outputType,
-            Func<object, ISemanticBroker, object> processCallbackFunc)
+            PipeCallback processCallbackFunc)
         {
             int weight = basedOffPackage.NextChainingWeight();
             return new PipeOutputPackage(weight, inputType, outputType, processCallbackFunc);
         }
 
-        public static PipeOutputPackage Direct(Type inputType, Type outputType, Func<object, ISemanticBroker, object> processCallbackFunc)
+        public static PipeOutputPackage Direct(Type inputType, Type outputType, PipeCallback processCallbackFunc)
         {
             const int weight = 1;
             return new PipeOutputPackage(weight, inputType, outputType, processCallbackFunc);

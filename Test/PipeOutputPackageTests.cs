@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -11,8 +12,9 @@ namespace SemanticPipes
         {
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
-                Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => null;
-                var pipePackageOption = PipeOutputPackage.Direct(null, typeof(string), processCallbackFunc);
+                PipeCallback processCallbackFunc = (input, broker) => null;
+                PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(null, typeof (string),
+                    processCallbackFunc);
 
                 Assert.Fail();
             });
@@ -25,8 +27,9 @@ namespace SemanticPipes
         {
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
-                Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => null;
-                var pipePackageOption = PipeOutputPackage.Direct(typeof(string), null, processCallbackFunc);
+                PipeCallback processCallbackFunc = (input, broker) => null;
+                PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (string), null,
+                    processCallbackFunc);
 
                 Assert.Fail();
             });
@@ -39,7 +42,7 @@ namespace SemanticPipes
         {
             var argumentNullException = Assert.Throws<ArgumentNullException>(() =>
             {
-                var pipePackageOption = PipeOutputPackage.Direct(typeof(string), typeof(string), null);
+                PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (string), typeof (string), null);
                 Assert.Fail();
             });
 
@@ -47,44 +50,52 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenPackageWhichProcessesIntegers_WhenInputParameterIsStringType_ItShouldThrowNotArgumentException()
+        public void GivenCallbackWhichReturnsNull_WhenLegallyCalled_ItShouldThrowUnexpectedPipePackageOperationException
+            ()
         {
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => "abc";
-            var pipePackageOption = PipeOutputPackage.Direct(typeof(int), typeof(string), processCallbackFunc);
+            PipeCallback processCallbackFunc = (input, broker) => null;
+            PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (string), typeof (string),
+                processCallbackFunc);
 
-            var argumentException = Assert.Throws<ArgumentException>(() => pipePackageOption.ProcessInput("abc", null));
-            Assert.AreEqual("input", argumentException.ParamName);
+            Assert.Throws<UnexpectedPipePackageOperationException>(
+                async () => await pipePackageOption.ProcessInput("abc", null));
         }
 
         [Test]
-        public void GivenPackageInstance_WhenNullPassedIntoInputParameter_ItShouldThrowArgumentNullException()
+        public async Task GivenEchoCallback_WhenItIsCalledWithInput_ItShouldReturnTheInput()
         {
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => null;
-            var pipePackageOption = PipeOutputPackage.Direct(typeof(string), typeof(string), processCallbackFunc);
+            PipeCallback processCallbackFunc = (input, broker) => Task.FromResult(input);
+            PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (string), typeof (string),
+                processCallbackFunc);
 
-            var argumentNullException = Assert.Throws<ArgumentNullException>(() => pipePackageOption.ProcessInput(null, null));
-
-            Assert.AreEqual("input", argumentNullException.ParamName);
-        }
-
-        [Test]
-        public void GivenEchoCallback_WhenItIsCalledWithInput_ItShouldReturnTheInput()
-        {
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => input;
-            var pipePackageOption = PipeOutputPackage.Direct(typeof(string), typeof(string), processCallbackFunc);
-
-            object output = pipePackageOption.ProcessInput("abc", null);
+            object output = await pipePackageOption.ProcessInput("abc", null);
 
             Assert.AreEqual("abc", output);
         }
 
         [Test]
-        public void GivenCallbackWhichReturnsNull_WhenLegallyCalled_ItShouldThrowUnexpectedPipePackageOperationException()
+        public void GivenPackageInstance_WhenNullPassedIntoInputParameter_ItShouldThrowArgumentNullException()
         {
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => null;
-            var pipePackageOption = PipeOutputPackage.Direct(typeof(string), typeof(string), processCallbackFunc);
+            PipeCallback processCallbackFunc = (input, broker) => null;
+            PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (string), typeof (string),
+                processCallbackFunc);
 
-            Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc", null));
+            var argumentNullException =
+                Assert.Throws<ArgumentNullException>(async () => await pipePackageOption.ProcessInput(null, null));
+
+            Assert.AreEqual("input", argumentNullException.ParamName);
+        }
+
+        [Test]
+        public void GivenPackageWhichProcessesIntegers_WhenInputParameterIsStringType_ItShouldThrowNotArgumentException()
+        {
+            PipeCallback processCallbackFunc = (input, broker) => Task.FromResult((object) "abc");
+            PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (int), typeof (string),
+                processCallbackFunc);
+
+            var argumentException =
+                Assert.Throws<ArgumentException>(async () => await pipePackageOption.ProcessInput("abc", null));
+            Assert.AreEqual("input", argumentException.ParamName);
         }
 
         [Test]
@@ -92,10 +103,12 @@ namespace SemanticPipes
             GivenProcessorWhichReturnsString_WhenProcesCallbackReturnsInteger_ItShouldThrowUnexpectedPipePackageOperationException
             ()
         {
-            Func<object, ISemanticBroker, object> processCallbackFunc = (input, broker) => 2;
-            var pipePackageOption = PipeOutputPackage.Direct(typeof(string), typeof(string), processCallbackFunc);
+            PipeCallback processCallbackFunc = (input, broker) => Task.FromResult((object) 2);
+            PipeOutputPackage pipePackageOption = PipeOutputPackage.Direct(typeof (string), typeof (string),
+                processCallbackFunc);
 
-            Assert.Throws<UnexpectedPipePackageOperationException>(() => pipePackageOption.ProcessInput("abc", null));
+            Assert.Throws<UnexpectedPipePackageOperationException>(
+                async () => await pipePackageOption.ProcessInput("abc", null));
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SemanticPipes.Observers
 {
@@ -48,8 +49,8 @@ namespace SemanticPipes.Observers
 
             Type outputType = _strategy.CreateTargetOutputType(elementType);
             MethodInfo closedToArrayMethodInfo = _strategy.ClosedGenericMethodInfo(elementType);
-            Func<object, ISemanticBroker, object> processCallback =
-                (input, broker) => closedToArrayMethodInfo.Invoke(input, new[] {input});
+            PipeCallback processCallback =
+                (input, broker) => Task.FromResult(closedToArrayMethodInfo.Invoke(input, new[] {input}));
 
             return PipeOutputPackage.Infer(package, inputType, outputType, processCallback);
         }
