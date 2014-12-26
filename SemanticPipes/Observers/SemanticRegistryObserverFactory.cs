@@ -21,6 +21,7 @@ namespace SemanticPipes.Observers
             yield return new ConvertSingleOutputToEnumerableObserver();
             yield return new ConvertEnumerableToEnumerableObserver();
             yield return new ConvertEnumerableToTargetObserver(new ArrayEnumberableConversionStrategy());
+            yield return new ConvertEnumerableToTargetObserver(new ListEnumberableConversionStrategy());
 
             // todo: walkthrough inference chain (for list of generic type)
         }

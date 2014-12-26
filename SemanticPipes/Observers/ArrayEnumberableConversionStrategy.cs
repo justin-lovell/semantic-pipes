@@ -6,6 +6,8 @@ namespace SemanticPipes.Observers
 {
     internal sealed class ArrayEnumberableConversionStrategy : IEnumberableConversionStrategy
     {
+        private static readonly MethodInfo GenericToArrayMethodInfo = typeof (Enumerable).GetMethod("ToArray");
+
         public bool ShouldExpandUponIncomingPackage(PipeOutputPackage package)
         {
             return !package.OutputType.IsArray;
@@ -18,9 +20,7 @@ namespace SemanticPipes.Observers
 
         public MethodInfo ClosedGenericMethodInfo(Type elementType)
         {
-            MethodInfo genericToArrayMethodInfo = typeof (Enumerable).GetMethod("ToArray");
-            MethodInfo closedToArrayMethodInfo = genericToArrayMethodInfo.MakeGenericMethod(elementType);
-            return closedToArrayMethodInfo;
+            return GenericToArrayMethodInfo.MakeGenericMethod(elementType);
         }
     }
 }
