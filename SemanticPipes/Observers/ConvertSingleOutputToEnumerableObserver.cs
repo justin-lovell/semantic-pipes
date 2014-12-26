@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SemanticPipes.Observers
@@ -8,12 +7,21 @@ namespace SemanticPipes.Observers
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
-            if (package.OutputType.IsEnumerable())
+            if (!package.InputType.IsEnumerable() && package.OutputType.IsEnumerable())
             {
-                yield break;
+                Type selfEnumerableType = typeof (IEnumerable<>).MakeGenericType(package.InputType);
+
+                if (selfEnumerableType.IsAssignableFrom(package.OutputType))
+                {
+                    // this fingerprint shows that we are registering ourselves
+                    yield break;
+                }
             }
 
-            yield return ConvertToDataType(package.OutputType, package);
+            if (!package.OutputType.IsEnumerable())
+            {
+                yield return ConvertToDataType(package.OutputType, package);
+            }
 
             if (!package.InputType.IsEnumerable())
             {
@@ -28,14 +36,14 @@ namespace SemanticPipes.Observers
 
         private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
         {
-            Type outputType = typeof(List<>).MakeGenericType(inputType);
             Func<object, object> processCallbackFunc = o =>
             {
-                var list = (IList) Activator.CreateInstance(outputType);
-                list.Add(o);
-                return list;
+                Array array = Array.CreateInstance(inputType, 1);
+                array.SetValue(o, 0);
+                return array;
             };
 
+            Type outputType = typeof (IEnumerable<>).MakeGenericType(inputType);
             return PipeOutputPackage.Infer(basedOffPackage, inputType, outputType, processCallbackFunc);
         }
     }

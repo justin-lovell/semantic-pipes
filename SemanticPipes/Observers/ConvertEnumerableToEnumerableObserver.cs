@@ -8,6 +8,13 @@ namespace SemanticPipes.Observers
 {
     internal sealed class ConvertEnumerableToEnumerableObserver : ISemanticRegistryObserver
     {
+        private static readonly MethodInfo GenericCastingMethodInfo;
+
+        static ConvertEnumerableToEnumerableObserver()
+        {
+            GenericCastingMethodInfo = typeof (Enumerable).GetMethod("Cast", new[] {typeof (IEnumerable)});
+        }
+
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
             if (package.InputType.IsEnumerable() || package.OutputType.IsEnumerable())
@@ -15,8 +22,7 @@ namespace SemanticPipes.Observers
                 yield break;
             }
 
-            MethodInfo genericCastingMethodInfo = typeof (Enumerable).GetMethod("Cast", new[] {typeof (IEnumerable)});
-            MethodInfo castingMethodInfo = genericCastingMethodInfo.MakeGenericMethod(package.OutputType);
+            MethodInfo castingMethodInfo = GenericCastingMethodInfo.MakeGenericMethod(package.OutputType);
 
             Type inputType = typeof (IEnumerable<>).MakeGenericType(package.InputType);
             Type outputType = typeof (IEnumerable<>).MakeGenericType(package.OutputType);
