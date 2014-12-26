@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Feature_AutoMappingCollectionToCollection_Tests.cs" />
     <Compile Include="Feature_AutoMappingObjectsToCollectionObjects_Tests.cs" />
     <Compile Include="Feature_Chaining_Tests.cs" />
     <Compile Include="Feature_ObserveRegistration_Tests.cs" />
