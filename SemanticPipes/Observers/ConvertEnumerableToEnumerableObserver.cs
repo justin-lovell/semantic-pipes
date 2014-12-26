@@ -34,7 +34,7 @@ namespace SemanticPipes.Observers
                     from input in inputEnumerable.Cast<object>()
                     select package.ProcessInput(input, broker);
 
-                var results = await Task.WhenAll(pipe);
+                var results = await Task.WhenAll(pipe).ConfigureAwait(false);
                 return castingMethodInfo.Invoke(results, new object[] {results});
             };
             yield return PipeOutputPackage.Infer(package, inputType, outputType, processCallbackFunc);

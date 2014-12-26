@@ -36,7 +36,7 @@ namespace SemanticPipes
             public async Task<TDestination> Output<TDestination>()
             {
                 PipeOutputPackage solvedPipePackage = _solver.SolveAsPipePackage(typeof (TSource), typeof (TDestination));
-                object processedOutput = await solvedPipePackage.ProcessInput(_source, _broker);
+                object processedOutput = await solvedPipePackage.ProcessInput(_source, _broker).ConfigureAwait(false);
 
                 return (TDestination) processedOutput;
             }

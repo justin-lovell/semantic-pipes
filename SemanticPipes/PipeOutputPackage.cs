@@ -47,7 +47,7 @@ namespace SemanticPipes
             var processingTask = _processCallbackFunc(input, semanticBroker);
             GuardAgainstNullResultFromCallback(processingTask);
 
-            object output = await processingTask;
+            object output = await processingTask.ConfigureAwait(false);
 
             GuardAgainstNullResultFromCallback(output);
             GuardAgainstUnexpectedReturnTypeFromCallback(output);
@@ -118,8 +118,8 @@ namespace SemanticPipes
 
             PipeCallback processCallbackFunc = async (input, broker) =>
             {
-                object intermediate = await startPackage.ProcessInput(input, broker);
-                return await endPackage.ProcessInput(intermediate, broker);
+                object intermediate = await startPackage.ProcessInput(input, broker).ConfigureAwait(false);
+                return await endPackage.ProcessInput(intermediate, broker).ConfigureAwait(false);
             };
 
             return new PipeOutputPackage(weight, sourceType, destinationType, processCallbackFunc);
