@@ -19,8 +19,8 @@ namespace SemanticPipes.Observers
         {
             yield return new AdvertiseOutputInheritanceChainObserver();
             yield return new ConvertSingleOutputToEnumerableObserver();
-            yield return new ConvertSingleOutputToArrayObserver();
             yield return new ConvertEnumerableToEnumerableObserver();
+            yield return new ConvertEnumerableToArrayObserver();
 
             // todo: walkthrough inference chain (for list of generic type)
         }

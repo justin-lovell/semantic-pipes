@@ -45,8 +45,8 @@
     <Compile Include="ISemanticRegistryObserver.cs" />
     <Compile Include="Observers\AdvertiseOutputInheritanceChainObserver.cs" />
     <Compile Include="Observers\CollectiveSemanticRegistryObserver.cs" />
+    <Compile Include="Observers\ConvertEnumerableToArrayObserver.cs" />
     <Compile Include="Observers\ConvertEnumerableToEnumerableObserver.cs" />
-    <Compile Include="Observers\ConvertSingleOutputToArrayObserver.cs" />
     <Compile Include="Observers\ConvertSingleOutputToEnumerableObserver.cs" />
     <Compile Include="Observers\EnsureNoDuplicateUserRegistrationObserver.cs" />
     <Compile Include="Observers\MemorisedChainBuilderRegistryBuilder.cs" />
