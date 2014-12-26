@@ -33,14 +33,14 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(new[] {new TestObjectA()})
+            var enumerable = semanticBroker.On(new[] {new TestObjectA()}.AsEnumerable())
                 .Output<IEnumerable<TestObjectB>>();
 
 
             // assert
-            Assert.AreEqual(1, counter);
             TestObjectB returnedType = enumerable.Single();
             Assert.AreSame(expectedReturnObject, returnedType);
+            Assert.AreEqual(1, counter);
         }
     }
 }

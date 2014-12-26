@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="AdvertiseOutputInheritanceChainObserver.cs" />
     <Compile Include="CollectiveSemanticRegistryObserver.cs" />
+    <Compile Include="ConvertEnumerableToEnumerableObserver.cs" />
     <Compile Include="ConvertSingleOutputToArrayObserver.cs" />
     <Compile Include="EnsureNoDuplicateUserRegistrationObserver.cs" />
     <Compile Include="ConvertSingleOutputToEnumerableObserver.cs" />

@@ -51,8 +51,8 @@ namespace SemanticPipes
 
         private void GuardAgainstUnexpectedInputType(object input)
         {
-            Type inputType = input.GetType();
-            if (inputType == InputType)
+            Type actualInputType = input.GetType();
+            if (InputType.IsAssignableFrom(actualInputType))
             {
                 return;
             }
@@ -60,21 +60,21 @@ namespace SemanticPipes
             string message =
                 string.Format(
                     "Expected to only process objects of type '{0}'. Instead, we got an object of type '{1}'.",
-                    InputType, inputType);
+                    InputType, actualInputType);
             throw new ArgumentException(message, "input");
         }
 
         private void GuardAgainstUnexpectedReturnTypeFromCallback(object output)
         {
-            Type outputType = output.GetType();
-            if (OutputType.IsAssignableFrom(outputType))
+            Type actualOutputType = output.GetType();
+            if (OutputType.IsAssignableFrom(actualOutputType))
             {
                 return;
             }
 
             string message =
                 string.Format("Expected an output of type '{0}'. Instead, we got an object of type of '{1}'.",
-                    OutputType, outputType);
+                    OutputType, actualOutputType);
             throw new UnexpectedPipePackageOperationException(message);
         }
 
