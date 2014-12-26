@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using SemanticPipes.Observers;
 
 namespace SemanticPipes
 {

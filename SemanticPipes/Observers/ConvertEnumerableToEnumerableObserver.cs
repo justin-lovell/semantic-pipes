@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SemanticPipes
+namespace SemanticPipes.Observers
 {
-    internal class ConvertEnumerableToEnumerableObserver : ISemanticRegistryObserver
+    internal sealed class ConvertEnumerableToEnumerableObserver : ISemanticRegistryObserver
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SemanticPipes
+namespace SemanticPipes.Observers
 {
     internal class ReplayPackagesToLateBoundedObserverRegistryObserver : ISemanticRegistryObserver
     {

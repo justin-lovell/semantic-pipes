@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SemanticPipes
+namespace SemanticPipes.Observers
 {
-    internal sealed class MemorisedChainBuilderRegistryBuilder : ISemanticRegistryObserver
+    public sealed class MemorisedChainBuilderRegistryBuilder : ISemanticRegistryObserver
     {
         private readonly Dictionary<Tuple<Type, Type>, PipeOutputPackage> _packages =
             new Dictionary<Tuple<Type, Type>, PipeOutputPackage>();

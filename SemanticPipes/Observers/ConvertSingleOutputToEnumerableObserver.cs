@@ -2,17 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SemanticPipes
+namespace SemanticPipes.Observers
 {
-    internal class ConvertSingleOutputToArrayObserver : ISemanticRegistryObserver
+    internal sealed class ConvertSingleOutputToEnumerableObserver : ISemanticRegistryObserver
     {
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
-            if (package.OutputType.IsArray)
-            {
-                yield break;
-            }
-
             if (package.OutputType.IsEnumerable())
             {
                 yield break;
@@ -33,17 +28,12 @@ namespace SemanticPipes
 
         private PipeOutputPackage ConvertToDataType(Type inputType, PipeOutputPackage basedOffPackage)
         {
-            if (!inputType.IsClass)
+            Type outputType = typeof(List<>).MakeGenericType(inputType);
+            Func<object, object> processCallbackFunc = o =>
             {
-                return null;
-            }
-
-            Type outputType = inputType.MakeArrayType();
-            Func<object, object> processCallbackFunc = value =>
-            {
-                Array instance = Array.CreateInstance(inputType, 1);
-                instance.SetValue(value, 0);
-                return instance;
+                var list = (IList) Activator.CreateInstance(outputType);
+                list.Add(o);
+                return list;
             };
 
             return PipeOutputPackage.Infer(basedOffPackage, inputType, outputType, processCallbackFunc);

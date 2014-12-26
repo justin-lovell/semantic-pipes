@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SemanticPipes
+namespace SemanticPipes.Observers
 {
-    internal sealed class CollectiveSemanticRegistryObserver : ISemanticRegistryObserver
+    public sealed class CollectiveSemanticRegistryObserver : ISemanticRegistryObserver
     {
         private readonly IEnumerable<ISemanticRegistryObserver> _observers;
 

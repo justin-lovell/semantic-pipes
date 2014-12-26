@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SemanticPipes
+namespace SemanticPipes.Observers
 {
     internal static class SemanticRegistryObserverFactory
     {
