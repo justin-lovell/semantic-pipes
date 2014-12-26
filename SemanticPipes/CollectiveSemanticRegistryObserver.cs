@@ -15,14 +15,17 @@ namespace SemanticPipes
         public IEnumerable<PipeOutputPackage> PipePackageInstalled(PipeOutputPackage package)
         {
             return
-                _observers.SelectMany(semanticRegistryObserver => semanticRegistryObserver.PipePackageInstalled(package));
+                from observer in _observers
+                from additionalPackage in observer.PipePackageInstalled(package)
+                select additionalPackage;
         }
 
         public IEnumerable<PipeOutputPackage> SiblingPackageLateBounded(ISemanticRegistryObserver siblingObserver)
         {
             return
-                _observers.SelectMany(
-                    semanticRegistryObserver => semanticRegistryObserver.SiblingPackageLateBounded(siblingObserver));
+                from observer in _observers
+                from additionalPackage in observer.SiblingPackageLateBounded(siblingObserver)
+                select additionalPackage;
         }
     }
 }
