@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -25,7 +26,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenRegistryWithMultiplePipes_WhenResolvingFromAToD_ItShouldChainAllThePipes()
+        public async Task GivenRegistryWithMultiplePipes_WhenResolvingFromAToD_ItShouldChainAllThePipes()
         {
             for (int counter = 0; counter < 15; counter++)
             {
@@ -66,7 +67,7 @@ namespace SemanticPipes
                 ISemanticBroker broker = semanticBuilder.CreateBroker();
 
                 // act
-                var solvedExecution = broker.On(instanceClassA).Output<TestClassD>();
+                var solvedExecution = await broker.On(instanceClassA).Output<TestClassD>();
 
                 // assert
                 Assert.AreEqual(instanceClassD, solvedExecution);
@@ -74,7 +75,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenRegistryWithMultipleSources_WhenResolvingToSpecificType_ItShouldResolve()
+        public async Task GivenRegistryWithMultipleSources_WhenResolvingToSpecificType_ItShouldResolve()
         {
             // pre-arrange
             var instanceClassA = new TestClassA();
@@ -89,8 +90,8 @@ namespace SemanticPipes
             ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
             // act
-            var solveToB = broker.On(instanceClassA).Output<TestClassB>();
-            var solveToC = broker.On(instanceClassA).Output<TestClassC>();
+            var solveToB = await broker.On(instanceClassA).Output<TestClassB>();
+            var solveToC = await broker.On(instanceClassA).Output<TestClassC>();
 
             // assert
             Assert.AreEqual(instanceClassB, solveToB);
@@ -98,7 +99,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenRegistryWithOnePipes_WhenResolvingFromAToB_ItShouldCallIt()
+        public async Task GivenRegistryWithOnePipes_WhenResolvingFromAToB_ItShouldCallIt()
         {
             // pre-arrange
             var instanceClassA = new TestClassA();
@@ -115,7 +116,7 @@ namespace SemanticPipes
             ISemanticBroker broker = semanaticBuilder.CreateBroker();
 
             // act
-            var solvedExecution = broker.On(instanceClassA).Output<TestClassB>();
+            var solvedExecution = await broker.On(instanceClassA).Output<TestClassB>();
 
             // assert
             Assert.AreEqual(instanceClassB, solvedExecution);

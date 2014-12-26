@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -16,7 +17,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenMappingFromObjectAToObjectB_WhenSolvingCollectionToCollection_ItShouldResolve()
+        public async Task GivenMappingFromObjectAToObjectB_WhenSolvingCollectionToCollection_ItShouldResolve()
         {
             // pre-arrangement
             int counter = 0;
@@ -33,7 +34,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(new[] {new TestObjectA()}.AsEnumerable())
+            var enumerable = await semanticBroker.On(new[] {new TestObjectA()}.AsEnumerable())
                 .Output<IEnumerable<TestObjectB>>();
 
 

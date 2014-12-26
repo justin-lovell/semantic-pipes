@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -16,7 +17,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenAtoArrayB_WhenSolvingSingleAToArraytA_ItShouldResolve()
+        public async Task GivenAtoArrayB_WhenSolvingSingleAToArraytA_ItShouldResolve()
         {
             // pre-arrangement
             var expectedReturnObject = new TestObjectA();
@@ -29,8 +30,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(expectedReturnObject)
-                .Output<TestObjectA[]>();
+            var enumerable = await semanticBroker.On(expectedReturnObject).Output<TestObjectA[]>();
 
 
             // assert
@@ -39,7 +39,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenAtoListB_WhenSolvingSingleAToListA_ItShouldResolve()
+        public async Task GivenAtoListB_WhenSolvingSingleAToListA_ItShouldResolve()
         {
             // pre-arrangement
             var expectedReturnObject = new TestObjectA();
@@ -53,8 +53,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(expectedReturnObject)
-                .Output<List<TestObjectA>>();
+            var enumerable = await semanticBroker.On(expectedReturnObject).Output<List<TestObjectA>>();
 
 
             // assert
@@ -63,7 +62,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenTwoClasses_WhenSolvingSingleClassToArray_ItShouldResolve()
+        public async Task GivenTwoClasses_WhenSolvingSingleClassToArray_ItShouldResolve()
         {
             // pre-arrangement
             var expectedReturnObject = new TestObjectB();
@@ -75,8 +74,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(new TestObjectA())
-                .Output<TestObjectB[]>();
+            var enumerable = await semanticBroker.On(new TestObjectA()).Output<TestObjectB[]>();
 
 
             // assert
@@ -85,7 +83,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenTwoClasses_WhenSolvingSingleClassToCollection_ItShouldResolve()
+        public async Task GivenTwoClasses_WhenSolvingSingleClassToCollection_ItShouldResolve()
         {
             // pre-arrangement
             var expectedReturnObject = new TestObjectB();
@@ -97,8 +95,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(new TestObjectA())
-                .Output<IEnumerable<TestObjectB>>();
+            var enumerable = await semanticBroker.On(new TestObjectA()).Output<IEnumerable<TestObjectB>>();
 
 
             // assert
@@ -107,7 +104,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenTwoClasses_WhenSolvingSingleClassToList_ItShouldResolve()
+        public async Task GivenTwoClasses_WhenSolvingSingleClassToList_ItShouldResolve()
         {
             // pre-arrangement
             var expectedReturnObject = new TestObjectB();
@@ -119,8 +116,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = semanticBroker.On(new TestObjectA())
-                .Output<List<TestObjectB>>();
+            var enumerable = await semanticBroker.On(new TestObjectA()).Output<List<TestObjectB>>();
 
 
             // assert

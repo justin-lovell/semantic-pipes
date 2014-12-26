@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SemanticPipes
 {
@@ -32,12 +33,13 @@ namespace SemanticPipes
                 _broker = broker;
             }
 
-            public TDestination Output<TDestination>()
+            public Task<TDestination> Output<TDestination>()
             {
                 PipeOutputPackage solvedPipePackage = _solver.SolveAsPipePackage(typeof (TSource), typeof (TDestination));
                 object processedOutput = solvedPipePackage.ProcessInput(_source, _broker);
 
-                return (TDestination) processedOutput;
+                var result = (TDestination) processedOutput;
+                return Task.FromResult(result);
             }
         }
     }

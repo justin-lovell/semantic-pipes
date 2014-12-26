@@ -1,7 +1,9 @@
-﻿namespace SemanticPipes
+﻿using System.Threading.Tasks;
+
+namespace SemanticPipes
 {
     public interface ISemanticOpenPipe
     {
-        TDestination Output<TDestination>();
+        Task<TDestination> Output<TDestination>();
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace SemanticPipes
@@ -29,7 +30,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public void GivenBrokerWithPipeFromObjectAToObjectB_WhenResolving_ItShouldInstantiateThePipe()
+        public async Task GivenBrokerWithPipeFromObjectAToObjectB_WhenResolving_ItShouldInstantiateThePipe()
         {
             // pre-arrangement
             var expectedOutputObject = new TestClassB();
@@ -41,7 +42,7 @@ namespace SemanticPipes
             ISemanticBroker broker = builder.CreateBroker();
 
             // act
-            var actualOutputObject = broker.On(new TestClassA()).Output<TestClassB>();
+            var actualOutputObject = await broker.On(new TestClassA()).Output<TestClassB>();
 
             // assert
             Assert.AreSame(expectedOutputObject, actualOutputObject);
@@ -49,7 +50,7 @@ namespace SemanticPipes
 
 
         [Test]
-        public void GivenRegistration_WhenTheProcessDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
+        public async Task GivenRegistration_WhenTheProcessDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
         {
             // pre-arrangement
             var expectedTestClassA = new TestClassA();
@@ -67,7 +68,7 @@ namespace SemanticPipes
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var processedOuput = semanticBroker.On(expectedTestClassA).Output<TestClassB>();
+            var processedOuput = await semanticBroker.On(expectedTestClassA).Output<TestClassB>();
 
             // assert
             Assert.AreSame(expectedTestClassB, processedOuput);
