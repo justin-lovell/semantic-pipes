@@ -61,12 +61,12 @@
     <Compile Include="Registries\ObserverRegistryMediator.cs" />
     <Compile Include="Registries\RegistryMediatorFactory.cs" />
     <Compile Include="Registries\SafetyRegistryMediator.cs" />
-    <Compile Include="Registries\SimplifyPipePackageOutput.cs" />
+    <Compile Include="Registries\SimplifyEnumerablePipePackageOutputRegistryMediator.cs" />
     <Compile Include="SafetyTripGuard.cs" />
     <Compile Include="SemanticBuilder.cs" />
     <Compile Include="ShortestPathGraphBuilder.cs" />
     <Compile Include="ISolver.cs" />
-    <Compile Include="SimplifyOutputResolving.cs" />
+    <Compile Include="SimplifyEnumerableTypeResolving.cs" />
     <Compile Include="SolverChainFactory.cs" />
     <Compile Include="TaskEx.cs" />
     <Compile Include="TypeHelperExtensions.cs" />

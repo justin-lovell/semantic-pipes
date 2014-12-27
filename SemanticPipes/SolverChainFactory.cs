@@ -4,7 +4,7 @@ namespace SemanticPipes
     {
         public static ISolver Create(ISolver solver)
         {
-            solver = new SimplifyOutputResolving(solver);
+            solver = new SimplifyEnumerableTypeResolving(solver);
 
             return solver;
         }

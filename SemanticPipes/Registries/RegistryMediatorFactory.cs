@@ -19,7 +19,7 @@ namespace SemanticPipes.Registries
                 });
 
             mediator = new ObserverRegistryMediator(semanticRegistryObservers);
-            mediator = new SimplifyPipePackageOutput(mediator);
+            mediator = new SimplifyEnumerablePipePackageOutputRegistryMediator(mediator);
             mediator = new SafetyRegistryMediator(mediator);
 
             return mediator;
