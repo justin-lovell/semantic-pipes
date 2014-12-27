@@ -58,7 +58,7 @@ namespace SemanticPipes.Observers
             Type inputType = typeof (IEnumerable<>).MakeGenericType(elementType);
             Type outputType = typeof (IEnumerable<>).MakeGenericType(baseType);
 
-            return PipeOutputPackage.Infer(package, inputType, outputType, (input, broker) => Task.FromResult(input));
+            return PipeOutputPackage.Infer(package, inputType, outputType, (input, broker) => input.IntoTaskResult());
         }
     }
 }

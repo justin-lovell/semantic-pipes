@@ -58,11 +58,13 @@ namespace SemanticPipes
         private PipeOutputPackage CreateAsyncPipeOutputPackage<TSource, TDestination>(
             Func<TSource, ISemanticBroker, Task<TDestination>> processCallback)
         {
-            PipeCallback wrappedProcessCallback = async (input, broker) =>
+            PipeCallback wrappedProcessCallback = (input, broker) =>
             {
                 var castedInput = (TSource) input;
-                object result = await processCallback(castedInput, broker);
-                return result;
+
+                return
+                    processCallback(castedInput, broker)
+                        .ContinueWith(task => (object) task.Result);
             };
 
             return PipeOutputPackage.Direct(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
@@ -75,8 +77,7 @@ namespace SemanticPipes
             {
                 var castedInput = (TSource) input;
                 object result = processCallback(castedInput, broker);
-
-                return Task.FromResult(result);
+                return result.IntoTaskResult();
             };
 
             return PipeOutputPackage.Direct(typeof (TSource), typeof (TDestination), wrappedProcessCallback);

@@ -27,15 +27,19 @@ namespace SemanticPipes.Observers
 
             Type inputType = typeof (IEnumerable<>).MakeGenericType(package.InputType);
             Type outputType = typeof (IEnumerable<>).MakeGenericType(package.OutputType);
-            PipeCallback processCallbackFunc = async (rawInputStream, broker) =>
+            PipeCallback processCallbackFunc = (rawInputStream, broker) =>
             {
                 var inputEnumerable = (IEnumerable) rawInputStream;
                 var pipe =
                     from input in inputEnumerable.Cast<object>()
                     select package.ProcessInput(input, broker);
 
-                var results = await Task.WhenAll(pipe).ConfigureAwait(false);
-                return castingMethodInfo.Invoke(results, new object[] {results});
+                return Task.Factory.ContinueWhenAll(pipe.ToArray(), tasks => tasks.Select(t => t.Result))
+                    .ContinueWith(resultTask =>
+                    {
+                        object results = resultTask.Result;
+                        return castingMethodInfo.Invoke(results, new[] {results});
+                    });
             };
             yield return PipeOutputPackage.Infer(package, inputType, outputType, processCallbackFunc);
         }

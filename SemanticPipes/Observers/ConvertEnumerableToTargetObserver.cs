@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SemanticPipes.Observers
 {
@@ -48,7 +47,7 @@ namespace SemanticPipes.Observers
 
             Type outputType = _strategy.CreateTargetOutputType(elementType);
             PipeCallback processCallback =
-                (input, broker) => Task.FromResult(_strategy.DoConversion(elementType, (IEnumerable) input));
+                (input, broker) => _strategy.DoConversion(elementType, (IEnumerable) input).IntoTaskResult();
 
             return PipeOutputPackage.Infer(package, inputType, outputType, processCallback);
         }

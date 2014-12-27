@@ -35,7 +35,7 @@ namespace SemanticPipes
         public Type InputType { get; private set; }
         public int Weight { get; private set; }
 
-        public async Task<object> ProcessInput(object input, ISemanticBroker semanticBroker)
+        public Task<object> ProcessInput(object input, ISemanticBroker semanticBroker)
         {
             if (input == null)
             {
@@ -47,12 +47,15 @@ namespace SemanticPipes
             var processingTask = _processCallbackFunc(input, semanticBroker);
             GuardAgainstNullResultFromCallback(processingTask);
 
-            object output = await processingTask.ConfigureAwait(false);
+            return processingTask.ContinueWith(task =>
+            {
+                object output = task.Result;
 
-            GuardAgainstNullResultFromCallback(output);
-            GuardAgainstUnexpectedReturnTypeFromCallback(output);
+                GuardAgainstNullResultFromCallback(output);
+                GuardAgainstUnexpectedReturnTypeFromCallback(output);
 
-            return output;
+                return output;
+            });
         }
 
         private void GuardAgainstUnexpectedInputType(object input)
@@ -116,11 +119,14 @@ namespace SemanticPipes
             Type destinationType = endPackage.OutputType;
             int weight = startPackage.Weight + endPackage.Weight;
 
-            PipeCallback processCallbackFunc = async (input, broker) =>
-            {
-                object intermediate = await startPackage.ProcessInput(input, broker).ConfigureAwait(false);
-                return await endPackage.ProcessInput(intermediate, broker).ConfigureAwait(false);
-            };
+            PipeCallback processCallbackFunc =
+                (input, broker) =>
+                    startPackage.ProcessInput(input, broker)
+                        .ContinueWith(startTask =>
+                        {
+                            object intermediate = startTask.Result;
+                            return endPackage.ProcessInput(intermediate, broker);
+                        }).Unwrap();
 
             return new PipeOutputPackage(weight, sourceType, destinationType, processCallbackFunc);
         }

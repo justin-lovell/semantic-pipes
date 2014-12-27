@@ -41,7 +41,7 @@ namespace SemanticPipes.Observers
             {
                 Array array = Array.CreateInstance(inputType, 1);
                 array.SetValue(input, 0);
-                return Task.FromResult((object)array);
+                return ((object)array).IntoTaskResult();
             };
 
             Type outputType = typeof (IEnumerable<>).MakeGenericType(inputType);

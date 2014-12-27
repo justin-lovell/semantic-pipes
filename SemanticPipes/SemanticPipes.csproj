@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SemanticPipes</RootNamespace>
     <AssemblyName>SemanticPipes</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -67,6 +67,7 @@
     <Compile Include="SemanticBuilder.cs" />
     <Compile Include="ShortestPathGraphBuilder.cs" />
     <Compile Include="ISolver.cs" />
+    <Compile Include="TaskEx.cs" />
     <Compile Include="TypeHelperExtensions.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
   </ItemGroup>
