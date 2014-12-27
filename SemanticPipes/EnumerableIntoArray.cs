@@ -8,7 +8,8 @@ namespace SemanticPipes
     {
         public bool CanTransform(Type actualType, Type requestedType)
         {
-            return requestedType.IsArray;
+            return requestedType.IsArray
+                   && requestedType.GetElementType() == actualType.ExtractEnumerableElementType();
         }
 
         public Func<object, object> CreateTransformingFunc(Type actualType, Type requestedType)

@@ -10,6 +10,7 @@ namespace SemanticPipes
         public bool CanTransform(Type actualType, Type requestedType)
         {
             return requestedType.IsGenericType
+                   && actualType.ExtractEnumerableElementType() == requestedType.ExtractEnumerableElementType()
                    && requestedType.GetGenericTypeDefinition() == typeof (List<>);
         }
 

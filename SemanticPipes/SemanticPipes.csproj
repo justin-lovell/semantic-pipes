@@ -61,7 +61,7 @@
     <Compile Include="Registries\ObserverRegistryMediator.cs" />
     <Compile Include="Registries\RegistryMediatorFactory.cs" />
     <Compile Include="Registries\SafetyRegistryMediator.cs" />
-    <Compile Include="Registries\SimplifyEnumerablePipePackageOutputRegistryMediator.cs" />
+    <Compile Include="Registries\SimplifyEnumerableOutputRegistryMediator.cs" />
     <Compile Include="SafetyTripGuard.cs" />
     <Compile Include="SemanticBuilder.cs" />
     <Compile Include="ShortestPathGraphBuilder.cs" />

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace SemanticPipes.Registries
 {
-    internal sealed class SimplifyEnumerablePipePackageOutputRegistryMediator : IRegistryMediator
+    internal sealed class SimplifyEnumerableOutputRegistryMediator : IRegistryMediator
     {
         private readonly IRegistryMediator _nextMediator;
 
-        public SimplifyEnumerablePipePackageOutputRegistryMediator(IRegistryMediator nextMediator)
+        public SimplifyEnumerableOutputRegistryMediator(IRegistryMediator nextMediator)
         {
             _nextMediator = nextMediator;
         }
@@ -19,12 +19,11 @@ namespace SemanticPipes.Registries
 
         public void AppendPackage(PipeOutputPackage package)
         {
-            Type newInputType = DetermineNewInterestType(package.InputType);
             Type newOutputType = DetermineNewInterestType(package.OutputType);
 
-            if (newInputType != package.InputType || newOutputType != package.OutputType)
+            if (newOutputType != package.OutputType)
             {
-                package = PipeOutputPackage.Direct(newInputType, newOutputType, package.ProcessInput);
+                package = PipeOutputPackage.Direct(package.InputType, newOutputType, package.ProcessInput);
             }
 
             _nextMediator.AppendPackage(package);

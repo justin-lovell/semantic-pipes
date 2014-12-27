@@ -19,6 +19,11 @@ namespace SemanticPipes
 
         public static Func<object, object> ConvertFor(Type actualType, Type requestedType)
         {
+            if (actualType == requestedType)
+            {
+                return o => o;
+            }
+
             var key = new Tuple<Type, Type>(actualType, requestedType);
             Func<object, object> func;
 
@@ -42,11 +47,6 @@ namespace SemanticPipes
 
         private static Func<object, object> CreateMappingFunc(Type actualType, Type requestedType)
         {
-            if (actualType == requestedType)
-            {
-                return o => o;
-            }
-
             IEnumerable<Func<object, object>> selectedTransforms =
                 from tranformer in Transformers
                 where tranformer.CanTransform(actualType, requestedType)
