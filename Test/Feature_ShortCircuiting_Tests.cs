@@ -109,5 +109,42 @@ namespace SemanticPipes
                 Assert.AreEqual(instanceClassD, solvedExecution);
             }
         }
+
+
+        [Test]
+        public async Task GivenRegistryWithPipe_WhenResolvingFromEnumerableToEnumerable_ItShouldUseTheShortCircuit()
+        {
+            for (int counter = 0; counter < 15; counter++)
+            {
+                // arrange
+                var semanticBuilder = new SemanticBuilder();
+
+                var enrollmentList = new List<Action>
+                {
+                    () => semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) =>
+                    {
+                        Assert.Fail();
+                        return new TestClassB();
+                    }),
+                    () => semanticBuilder.InstallPipe<IEnumerable<TestClassA>, IEnumerable<TestClassB>>(
+                        (a, innerBroker) => from b in a select new TestClassB())
+                };
+
+                var enrollmentActions = enrollmentList.OrderBy(x => Guid.NewGuid());
+                foreach (var enrollmentAction in enrollmentActions)
+                {
+                    enrollmentAction();
+                }
+
+                ISemanticBroker broker = semanticBuilder.CreateBroker();
+
+                // act
+                await broker.On(new[] { new TestClassA() }).Output<TestClassB[]>();
+                await broker.On(new List<TestClassA> { new TestClassA() }).Output<TestClassB[]>();
+                await broker.On(new List<TestClassA> { new TestClassA() }).Output<List<TestClassB>>();
+                await broker.On(new List<TestClassA> { new TestClassA() }).Output<IEnumerable<TestClassB>>();
+                await broker.On(new[] { new TestClassA() }).Output<List<TestClassB>>();
+            }
+        }
     }
 }
