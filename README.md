@@ -8,7 +8,7 @@ On the external facing applications, they will make a call to `ISemanticBroker.O
 
 NuGet
 -----
-TODO - publish to NuGet
+	Install-Package SemanticPipes
 
 Example
 -------
