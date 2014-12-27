@@ -19,14 +19,37 @@ namespace SemanticPipes.Registries
 
         public void AppendPackage(PipeOutputPackage package)
         {
+            package = SimplifyInput(package);
+            package = SimplifyOutput(package);
+            _nextMediator.AppendPackage(package);
+        }
+
+        private static PipeOutputPackage SimplifyOutput(PipeOutputPackage package)
+        {
             Type newOutputType = DetermineNewInterestType(package.OutputType);
 
-            if (newOutputType != package.OutputType)
+            return newOutputType == package.OutputType
+                ? package
+                : PipeOutputPackage.Direct(package.InputType, newOutputType, package.ProcessInput);
+        }
+
+        private static PipeOutputPackage SimplifyInput(PipeOutputPackage package)
+        {
+            Type newInputType = DetermineNewInterestType(package.InputType);
+
+            if (newInputType == package.InputType)
             {
-                package = PipeOutputPackage.Direct(package.InputType, newOutputType, package.ProcessInput);
+                return package;
             }
 
-            _nextMediator.AppendPackage(package);
+            PipeCallback processCallbackFunc = (input, broker) =>
+            {
+                Func<object, object> transformFunc =
+                    BrokerTransformerFactory.ConvertFor(newInputType, package.InputType);
+                object revisedInput = transformFunc(input);
+                return package.ProcessInput(revisedInput, broker);
+            };
+            return PipeOutputPackage.Direct(newInputType, package.OutputType, processCallbackFunc);
         }
 
         private static Type DetermineNewInterestType(Type type)
