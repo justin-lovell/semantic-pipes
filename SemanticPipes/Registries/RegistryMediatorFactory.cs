@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using SemanticPipes.Observers;
 
-namespace SemanticPipes
+namespace SemanticPipes.Registries
 {
     internal static class RegistryMediatorFactory
     {

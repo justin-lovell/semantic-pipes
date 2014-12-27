@@ -1,4 +1,4 @@
-﻿namespace SemanticPipes
+﻿namespace SemanticPipes.Registries
 {
     internal class SafetyRegistryMediator : IRegistryMediator
     {
