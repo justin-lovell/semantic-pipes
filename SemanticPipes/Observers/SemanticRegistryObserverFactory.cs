@@ -23,13 +23,6 @@ namespace SemanticPipes.Observers
             // convert single objects to enumerables
             yield return new ConvertSingleOutputToEnumerableObserver();
             yield return new ConvertEnumerableToEnumerableObserver();
-
-            // convert enumerables to target complex types
-            yield return new ConvertEnumerableToTargetObserver(new ArrayEnumberableConversionStrategy());
-            yield return new ConvertEnumerableToTargetObserver(new ListEnumberableConversionStrategy());
-
-            // convert complex list type to basic enumerable
-            yield return new ConvertEnumerableToTargetObserver(new IntoEnumberableConversionStrategy());
         }
     }
 }

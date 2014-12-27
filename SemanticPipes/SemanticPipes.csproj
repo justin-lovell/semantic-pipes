@@ -43,15 +43,10 @@
     <Compile Include="ISemanticRegistryObserver.cs" />
     <Compile Include="Observers\AdvertiseOutputInheritanceChainObserver.cs" />
     <Compile Include="Observers\AdvertiseContravarianceChainObserver.cs" />
-    <Compile Include="Observers\ArrayEnumberableConversionStrategy.cs" />
     <Compile Include="Observers\CollectiveSemanticRegistryObserver.cs" />
-    <Compile Include="Observers\ConvertEnumerableToTargetObserver.cs" />
     <Compile Include="Observers\ConvertEnumerableToEnumerableObserver.cs" />
     <Compile Include="Observers\ConvertSingleOutputToEnumerableObserver.cs" />
     <Compile Include="Observers\EnsureNoDuplicateUserRegistrationObserver.cs" />
-    <Compile Include="Observers\IEnumberableConversionStrategy.cs" />
-    <Compile Include="Observers\IntoEnumberableConversionStrategy.cs" />
-    <Compile Include="Observers\ListEnumberableConversionStrategy.cs" />
     <Compile Include="Observers\MemorisedChainBuilderRegistryBuilder.cs" />
     <Compile Include="Observers\ReplayPackagesToLateBoundedObserverRegistryObserver.cs" />
     <Compile Include="Observers\SemanticRegistryObserverFactory.cs" />
