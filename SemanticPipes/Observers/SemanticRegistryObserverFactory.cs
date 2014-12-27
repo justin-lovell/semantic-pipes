@@ -18,7 +18,7 @@ namespace SemanticPipes.Observers
         {
             // inheritance traversal
             yield return new AdvertiseOutputInheritanceChainObserver();
-//            yield return new AdvertiveContravarianceChainObserver();
+            yield return new AdvertiseContravarianceChainObserver();
 
             // convert single objects to enumerables
             yield return new ConvertSingleOutputToEnumerableObserver();
