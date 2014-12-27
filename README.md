@@ -17,7 +17,7 @@ TODO - Need to do a blog post
 
 Registry Observer Features
 --------------------------
-Before going into the small details of `semantic-pipes`, for the purposes of a quick introduction, the notation of set `(a; b)` will be used where `a` or `b` can represent any generic `System.Type`, including types of `IEnumerable`. Where the notations of `a[]` or `b[]` is used, it will mean `IEnumerable``1`.
+Before going into the small details of `semantic-pipes`, for the purposes of a quick introduction, the notation of set `(a; b)` will be used where `a` or `b` can represent any generic `System.Type`, including types of `IEnumerable`. Where the notations of `a[]` or `b[]` is used, it will mean `IEnumerable<T>`.
 
 Some of the mini-programs that `semantic-pipes` will wire up would be:
 
@@ -25,10 +25,10 @@ Some of the mini-programs that `semantic-pipes` will wire up would be:
 
 - User-defined sets will have priority over auto-bridge pipes. For example, if a set of `(a; c)` was registered by the user in addition to the previous example, then the user-defined set will be used.
 
-- Conversions from stand-alone objects, to enumerable equivalents. For example, if set (a; b) is registered by the user, the following sets will be inferred by the `semantic-pipes`:
-	- (a; a[]) - To a single item `IEnumerable`
-	- (b; b[]) - To a single item `IEnumerable`
-	- (a[]; b[]) - foreach item in `a`, it will convert to `b` as per user-defined pipe.
+- Conversions from stand-alone objects, to enumerable equivalents. For example, if set `(a; b)` is registered by the user, the following sets will be inferred by the `semantic-pipes`:
+	- `(a; a[])` - To a single item `IEnumerable`
+	- `(b; b[])` - To a single item `IEnumerable`
+	- `(a[]; b[])` - foreach item in `a`, it will convert to `b` as per user-defined pipe.
 
 - For each type that `semantic-pipe` observes, it will detect all the contravariance types. For example, if the user registers set `(a; b)`, then the following sets will be registered too:
 	- `(a; base_b)`
@@ -47,8 +47,8 @@ Why not just use Dependency Injection?
 --------------------------------------
 The first skunk works of this pattern indeed use dependency injection. I really enjoyed the flexibility that was afforded by writing small concise `IHandler` based chaining. However, I found the two key limitations.
 
-1) Application start-up was slow. Dependency injection was the problem because it was trying to scan all the assemblies during the startup.
-2) There was a massive explosion of classes within the subsystem. Most of the handlers were 4-10 lines long. And quite frankly, grouping these files by namespace was a management nightmare.
+1. Application start-up was slow. Dependency injection was the problem because it was trying to scan all the assemblies during the startup.
+2. There was a massive explosion of classes within the subsystem. Most of the handlers were 4-10 lines long. And quite frankly, grouping these files by namespace was a management nightmare.
 
 I found the dependency injection just too heavy handed, especially when other niche language-like features (such as contravariance) were desirable.
 
