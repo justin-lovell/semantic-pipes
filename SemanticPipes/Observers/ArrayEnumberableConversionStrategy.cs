@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
 
@@ -18,9 +19,10 @@ namespace SemanticPipes.Observers
             return elementType.MakeArrayType();
         }
 
-        public MethodInfo ClosedGenericMethodInfo(Type elementType)
+        public object DoConversion(Type elementType, IEnumerable input)
         {
-            return GenericToArrayMethodInfo.MakeGenericMethod(elementType);
+            var closedMethodInfo = GenericToArrayMethodInfo.MakeGenericMethod(elementType);
+            return closedMethodInfo.Invoke(input, new object[] {input});
         }
     }
 }

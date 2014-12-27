@@ -83,7 +83,7 @@ namespace SemanticPipes
         }
 
         [Test]
-        public async Task GivenTwoClasses_WhenSolvingSingleClassToCollection_ItShouldResolve()
+        public async Task GivenTwoClasses_WhenSolvingSingleClassToEnumerable_ItShouldResolve()
         {
             // pre-arrangement
             var expectedReturnObject = new TestObjectB();
@@ -117,6 +117,28 @@ namespace SemanticPipes
 
             // act
             var enumerable = await semanticBroker.On(new TestObjectA()).Output<List<TestObjectB>>();
+
+
+            // assert
+            TestObjectB returnedType = enumerable.Single();
+            Assert.AreSame(expectedReturnObject, returnedType);
+        }
+
+        [Test]
+        public async Task GivenTwoClassesWhenRegisteredAsList_WhenSolvingSingleClassToEnumerable_ItShouldResolve()
+        {
+            // pre-arrangement
+            var expectedReturnObject = new TestObjectB();
+
+            // arrange
+            var semanticBuilder = new SemanticBuilder();
+            semanticBuilder.InstallPipe<TestObjectA, List<TestObjectB>>(
+                (source, innerBroker) => new List<TestObjectB> {expectedReturnObject});
+
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+
+            // act
+            var enumerable = await semanticBroker.On(new TestObjectA()).Output<IEnumerable<TestObjectB>>();
 
 
             // assert

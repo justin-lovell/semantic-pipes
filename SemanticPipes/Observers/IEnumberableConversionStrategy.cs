@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using System.Collections;
 
 namespace SemanticPipes.Observers
 {
@@ -7,6 +7,6 @@ namespace SemanticPipes.Observers
     {
         bool ShouldExpandUponIncomingPackage(PipeOutputPackage package);
         Type CreateTargetOutputType(Type elementType);
-        MethodInfo ClosedGenericMethodInfo(Type elementType);
+        object DoConversion(Type elementType, IEnumerable input);
     }
 }

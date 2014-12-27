@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -32,9 +33,10 @@ namespace SemanticPipes.Observers
             return typeof (List<>).MakeGenericType(elementType);
         }
 
-        public MethodInfo ClosedGenericMethodInfo(Type elementType)
+        public object DoConversion(Type elementType, IEnumerable input)
         {
-            return GenericToListMethodInfo.MakeGenericMethod(elementType);
+            var closedMethodInfo = GenericToListMethodInfo.MakeGenericMethod(elementType);
+            return closedMethodInfo.Invoke(input, new object[] {input});
         }
     }
 }
