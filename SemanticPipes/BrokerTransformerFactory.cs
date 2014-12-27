@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace SemanticPipes
 {
@@ -10,17 +9,45 @@ namespace SemanticPipes
         private static readonly IBrokerTransformer[] Transformers =
         {
             new EnumerableIntoList(),
-            new EnumerableIntoArray(), 
+            new EnumerableIntoArray()
         };
 
+        private static readonly Dictionary<Tuple<Type, Type>, Func<object, object>> Cache =
+            new Dictionary<Tuple<Type, Type>, Func<object, object>>();
+
+        private static readonly object LockObject = new object();
+
         public static Func<object, object> ConvertFor(Type actualType, Type requestedType)
+        {
+            var key = new Tuple<Type, Type>(actualType, requestedType);
+            Func<object, object> func;
+
+            if (Cache.TryGetValue(key, out func))
+            {
+                return func;
+            }
+
+            func = CreateMappingFunc(actualType, requestedType);
+
+            lock (LockObject)
+            {
+                if (!Cache.ContainsKey(key))
+                {
+                    Cache.Add(key, func);
+                }
+            }
+
+            return func;
+        }
+
+        private static Func<object, object> CreateMappingFunc(Type actualType, Type requestedType)
         {
             if (actualType == requestedType)
             {
                 return o => o;
             }
 
-            var selectedTransforms =
+            IEnumerable<Func<object, object>> selectedTransforms =
                 from tranformer in Transformers
                 where tranformer.CanTransform(actualType, requestedType)
                 select tranformer.CreateTransformingFunc(actualType, requestedType);
@@ -28,49 +55,5 @@ namespace SemanticPipes
             return selectedTransforms.FirstOrDefault()
                    ?? (o => o);
         }
-    }
-
-    internal class EnumerableIntoArray : IBrokerTransformer
-    {
-        public bool CanTransform(Type actualType, Type requestedType)
-        {
-            return requestedType.IsArray;
-        }
-
-        public Func<object, object> CreateTransformingFunc(Type actualType, Type requestedType)
-        {
-            Type elementType = requestedType.ExtractEnumerableElementType();
-
-            MethodInfo genericMethodInfo = typeof(Enumerable).GetMethod("ToArray");
-            MethodInfo closedMethodInfo = genericMethodInfo.MakeGenericMethod(elementType);
-
-            return o => closedMethodInfo.Invoke(o, new[] { o });
-        }
-    }
-
-    internal class EnumerableIntoList : IBrokerTransformer
-    {
-        public bool CanTransform(Type actualType, Type requestedType)
-        {
-            return requestedType.IsGenericType
-                   && requestedType.GetGenericTypeDefinition() == typeof (List<>);
-        }
-
-        public Func<object, object> CreateTransformingFunc(Type actualType, Type requestedType)
-        {
-            Type elementType = requestedType.ExtractEnumerableElementType();
-
-            MethodInfo genericMethodInfo = typeof (Enumerable).GetMethod("ToList");
-            MethodInfo closedMethodInfo = genericMethodInfo.MakeGenericMethod(elementType);
-
-            return o => closedMethodInfo.Invoke(o, new[] {o});
-        }
-    }
-
-    internal interface IBrokerTransformer
-    {
-        bool CanTransform(Type actualType, Type requestedType);
-
-        Func<object, object> CreateTransformingFunc(Type actualType, Type requestedType);
     }
 }

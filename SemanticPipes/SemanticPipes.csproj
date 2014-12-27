@@ -36,7 +36,10 @@
   <ItemGroup>
     <Compile Include="BrokerTransformerFactory.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
+    <Compile Include="EnumerableIntoArray.cs" />
+    <Compile Include="EnumerableIntoList.cs" />
     <Compile Include="GraphEdgedSolver.cs" />
+    <Compile Include="IBrokerTransformer.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />
     <Compile Include="IRegistryMediator.cs" />
     <Compile Include="ISemanticOpenPipe.cs" />
