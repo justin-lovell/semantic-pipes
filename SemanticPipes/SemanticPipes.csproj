@@ -34,12 +34,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BrokerTransformerFactory.cs" />
+    <Compile Include="Transformations\TransformerFactory.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
-    <Compile Include="EnumerableIntoArray.cs" />
-    <Compile Include="EnumerableIntoList.cs" />
-    <Compile Include="GraphEdgedSolver.cs" />
-    <Compile Include="IBrokerTransformer.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />
     <Compile Include="IRegistryMediator.cs" />
     <Compile Include="ISemanticOpenPipe.cs" />
@@ -66,9 +62,13 @@
     <Compile Include="SemanticBuilder.cs" />
     <Compile Include="ShortestPathGraphBuilder.cs" />
     <Compile Include="ISolver.cs" />
-    <Compile Include="SimplifyEnumerableTypeResolving.cs" />
-    <Compile Include="SolverChainFactory.cs" />
+    <Compile Include="Solvers\GraphEdgedSolver.cs" />
+    <Compile Include="Solvers\SimplifyEnumerableTypeResolving.cs" />
+    <Compile Include="Solvers\SolverChainFactory.cs" />
     <Compile Include="TaskEx.cs" />
+    <Compile Include="Transformations\EnumerableIntoArray.cs" />
+    <Compile Include="Transformations\EnumerableIntoList.cs" />
+    <Compile Include="Transformations\IBrokerTransformer.cs" />
     <Compile Include="TypeHelperExtensions.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
   </ItemGroup>

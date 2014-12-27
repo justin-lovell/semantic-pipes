@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SemanticPipes
+namespace SemanticPipes.Transformations
 {
-    internal static class BrokerTransformerFactory
+    internal static class TransformerFactory
     {
         private static readonly IBrokerTransformer[] Transformers =
         {

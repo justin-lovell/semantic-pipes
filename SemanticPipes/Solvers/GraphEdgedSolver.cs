@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SemanticPipes
+namespace SemanticPipes.Solvers
 {
     internal sealed class GraphEdgedSolver : ISolver
     {

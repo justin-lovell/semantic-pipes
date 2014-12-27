@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SemanticPipes.Transformations;
 
 namespace SemanticPipes
 {
@@ -37,9 +38,9 @@ namespace SemanticPipes
             {
                 PipeOutputPackage solvedPipePackage = _solver.SolveAsPipePackage(typeof(TSource), typeof(TDestination));
                 Func<object, object> transformInput =
-                    BrokerTransformerFactory.ConvertFor(typeof(TSource), solvedPipePackage.InputType);
+                    TransformerFactory.ConvertFor(typeof(TSource), solvedPipePackage.InputType);
                 Func<object, object> transformOutput =
-                    BrokerTransformerFactory.ConvertFor(solvedPipePackage.OutputType, typeof (TDestination));
+                    TransformerFactory.ConvertFor(solvedPipePackage.OutputType, typeof (TDestination));
 
                 var input = transformInput(_source);
 

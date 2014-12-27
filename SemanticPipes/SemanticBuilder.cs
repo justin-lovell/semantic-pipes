@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using SemanticPipes.Observers;
 using SemanticPipes.Registries;
+using SemanticPipes.Solvers;
 
 namespace SemanticPipes
 {
@@ -22,9 +23,7 @@ namespace SemanticPipes
         public ISemanticBroker CreateBroker()
         {
             var graphEdges = _graphBuilder.FetchShortestPathsBySourceToDestination();
-            ISolver solver = new GraphEdgedSolver(graphEdges);
-
-            return new Broker(SolverChainFactory.Create(solver));
+            return new Broker(SolverChainFactory.Create(graphEdges));
         }
 
         public SemanticBuilder InstallPipe<TSource, TDestination>(

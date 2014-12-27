@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SemanticPipes
+namespace SemanticPipes.Transformations
 {
     internal interface IBrokerTransformer
     {

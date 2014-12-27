@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SemanticPipes.Transformations;
 
 namespace SemanticPipes.Registries
 {
@@ -45,7 +46,7 @@ namespace SemanticPipes.Registries
             PipeCallback processCallbackFunc = (input, broker) =>
             {
                 Func<object, object> transformFunc =
-                    BrokerTransformerFactory.ConvertFor(newInputType, package.InputType);
+                    TransformerFactory.ConvertFor(newInputType, package.InputType);
                 object revisedInput = transformFunc(input);
                 return package.ProcessInput(revisedInput, broker);
             };
