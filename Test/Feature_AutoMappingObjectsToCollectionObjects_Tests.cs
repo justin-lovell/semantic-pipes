@@ -39,25 +39,25 @@ namespace SemanticPipes
         }
 
         [Test]
-        public async Task GivenAtoListB_WhenSolvingSingleAToArraytA_ItShouldResolve()
+        public async Task GivenAtoListB_WhenSolvingSingleAToArraytB_ItShouldResolve()
         {
             // pre-arrangement
-            var expectedReturnObject = new TestObjectA();
+            var expectedReturnObject = new TestObjectB();
 
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
             semanticBuilder.InstallPipe<TestObjectA, List<TestObjectB>>(
-                (source, innerBroker) => new List<TestObjectB>() {new TestObjectB()});
+                (source, innerBroker) => new List<TestObjectB>() { expectedReturnObject });
 
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
-            var enumerable = await semanticBroker.On(expectedReturnObject).Output<List<TestObjectA>>();
+            var enumerable = await semanticBroker.On(new TestObjectA()).Output<TestObjectB[]>();
 
 
             // assert
-            TestObjectA returnedType = enumerable.Single();
+            TestObjectB returnedType = enumerable.Single();
             Assert.AreSame(expectedReturnObject, returnedType);
         }
 

@@ -34,6 +34,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BrokerTransformerFactory.cs" />
     <Compile Include="CannotResolveSemanticException.cs" />
     <Compile Include="GraphEdgedSolver.cs" />
     <Compile Include="InvalidRegistryConfigurationException.cs" />

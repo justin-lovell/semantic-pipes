@@ -36,10 +36,12 @@ namespace SemanticPipes
             public Task<TDestination> Output<TDestination>()
             {
                 PipeOutputPackage solvedPipePackage = _solver.SolveAsPipePackage(typeof (TSource), typeof (TDestination));
+                Func<object, object> transformOutput =
+                    BrokerTransformerFactory.ConvertFor(solvedPipePackage.OutputType, typeof (TDestination));
 
                 return
                     solvedPipePackage.ProcessInput(_source, _broker)
-                        .ContinueWith(task => (TDestination) task.Result);
+                        .ContinueWith(task => (TDestination)transformOutput(task.Result));
             }
         }
     }
