@@ -14,6 +14,15 @@ Example
 -------
 TODO - Need to do a blog post
 
+Support
+-------
+Please feel free to contact me privately with your support questions, feature requests, and bug discoveries at [justin@justjuzzy.com](mailto:justin@justjuzzy.com?subject=[semantic-pipes]).
+
+The Quick Documentation
+=======================
+Releasing open source code is a thankless job. If you have any questions, please drop me a mail at [justin@justjuzzy.com](mailto:justin@justjuzzy.com?subject=[semantic-pipes]).
+
+I have put a quick high-level documentation together. Hope it gives a general idea what and how the library will help your Ports and Adapters architecture.
 
 Registry Observer Features
 --------------------------
@@ -37,7 +46,7 @@ Some of the mini-programs that `semantic-pipes` will wire up would be:
 
 - All sorts of collections are seen as `IEnumerable`. So if `IEnumerable<T>` is seen in a set, so is `T[]` and so on.
 
-- Every single time a new set `(a; b)` is considered, all observers are able to infer new sets such as `(c; d)`. These inferred sets are then recirculated into the observers to determine if additional inferences may be made, and so on.
+- Every single time a new set `(a; b)` is considered, all observers are able to infer new sets such as `(c; d)`. These inferred sets are then recirculated into the observers to determine if additional inferences may be made, and so on. This is where the most powerful feature of `semantic-pipes` exists.
 
 - Any late `ISemanticRegistryObserver` which is registered late, will receive all sets registered from the beginning of the `SemanticBuilder` life-span.
 
