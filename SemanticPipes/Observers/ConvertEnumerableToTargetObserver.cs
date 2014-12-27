@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SemanticPipes.Observers
@@ -40,7 +39,7 @@ namespace SemanticPipes.Observers
 
         private PipeOutputPackage ProcessType(Type inputType, PipeOutputPackage package)
         {
-            Type elementType = ExtractElementType(inputType);
+            Type elementType = inputType.ExtractEnumerableElementType();
 
             if (elementType == null)
             {
@@ -52,39 +51,6 @@ namespace SemanticPipes.Observers
                 (input, broker) => Task.FromResult(_strategy.DoConversion(elementType, (IEnumerable) input));
 
             return PipeOutputPackage.Infer(package, inputType, outputType, processCallback);
-        }
-
-        private Type ExtractElementType(Type inputType)
-        {
-            var seenTypes = new Dictionary<Type, object>();
-            var processingQueue = new Queue<Type>(new[] {inputType});
-
-            while (processingQueue.Count > 0)
-            {
-                Type currentType = processingQueue.Dequeue();
-                if (seenTypes.ContainsKey(currentType))
-                {
-                    continue;
-                }
-
-                if (currentType.IsGenericType)
-                {
-                    Type genericTypeDefinition = currentType.GetGenericTypeDefinition();
-                    if (genericTypeDefinition == typeof (IEnumerable<>))
-                    {
-                        Type argumentType = currentType.GetGenericArguments().First();
-                        return argumentType;
-                    }
-                }
-
-                seenTypes.Add(currentType, null);
-                foreach (Type nextType in inputType.GetInterfaces())
-                {
-                    processingQueue.Enqueue(nextType);
-                }
-            }
-
-            return null;
         }
     }
 }

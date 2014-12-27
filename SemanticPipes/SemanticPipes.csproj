@@ -43,6 +43,7 @@
     <Compile Include="ISemanticBroker.cs" />
     <Compile Include="ISemanticRegistryObserver.cs" />
     <Compile Include="Observers\AdvertiseOutputInheritanceChainObserver.cs" />
+    <Compile Include="Observers\AdvertiveContravarianceChainObserver.cs" />
     <Compile Include="Observers\ArrayEnumberableConversionStrategy.cs" />
     <Compile Include="Observers\CollectiveSemanticRegistryObserver.cs" />
     <Compile Include="Observers\ConvertEnumerableToTargetObserver.cs" />
