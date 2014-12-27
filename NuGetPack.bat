@@ -1,0 +1,1 @@
+.\.nuget\NuGet.exe pack .\SemanticPipes\SemanticPipes.csproj -Prop Configuration=Release

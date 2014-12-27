@@ -157,3 +157,6 @@ $RECYCLE.BIN/
 
 # NuGet restore packages
 /packages
+
+
+*.nupkg

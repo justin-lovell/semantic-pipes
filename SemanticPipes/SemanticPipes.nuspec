@@ -1,0 +1,15 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Justin Lovell</authors>
+    <owners>Justin Lovell</owners>
+    <licenseUrl>https://github.com/justin-lovell/semantic-pipes/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/justin-lovell/semantic-pipes</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Semantic Pipes is inspired by the UNIX philosophy for stitching multiple programs to build newly morphed programs. This library helps abstract the glue away from applications which uses the Ports-And-Adapters pattern.</description>
+    <copyright>Copyright 2014 Justin Lovell</copyright>
+  </metadata>
+</package>
