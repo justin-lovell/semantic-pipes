@@ -43,7 +43,7 @@ namespace SemanticPipes
 
             // arrange
             var semanticBuilder = new SemanticBuilder();
-            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => null);
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => (TestClassB)null);
 
             // act
             var observer = new TestRegistryObserver(package =>
@@ -73,7 +73,7 @@ namespace SemanticPipes
             semanticBuilder.RegisterObserver(observer);
 
             // act
-            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => null);
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => (TestClassB)null);
 
             // assert
             Assert.IsTrue(wasEventCalled);
@@ -102,7 +102,7 @@ namespace SemanticPipes
 
             // act
             semanticBuilder.RegisterObserver(observer1);
-            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => null);
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) => (TestClassB)null);
             semanticBuilder.RegisterObserver(observer2);
 
             // assert

@@ -14,7 +14,8 @@ namespace SemanticPipes
 
             // act
             var argumentNullException =
-                Assert.Throws<ArgumentNullException>(() => semanticBuilder.InstallPipe<string, string>(null));
+                Assert.Throws<ArgumentNullException>(
+                    () => semanticBuilder.InstallPipe((Func<string, ISemanticBroker, string>) null));
 
             // assert
             Assert.AreEqual("processCallback", argumentNullException.ParamName);

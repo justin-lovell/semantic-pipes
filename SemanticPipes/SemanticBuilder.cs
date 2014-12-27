@@ -27,7 +27,8 @@ namespace SemanticPipes
             return new Broker(solver);
         }
 
-        public SemanticBuilder InstallPipe<TSource, TDestination>(Func<TSource, ISemanticBroker, TDestination> processCallback)
+        public SemanticBuilder InstallPipe<TSource, TDestination>(
+            Func<TSource, ISemanticBroker, TDestination> processCallback)
         {
             if (processCallback == null)
             {
@@ -38,6 +39,33 @@ namespace SemanticPipes
             _registryMediator.AppendPackage(package);
 
             return this;
+        }
+
+        public SemanticBuilder InstallPipe<TSource, TDestination>(
+            Func<TSource, ISemanticBroker, Task<TDestination>> processCallback)
+        {
+            if (processCallback == null)
+            {
+                throw new ArgumentNullException("processCallback");
+            }
+
+            PipeOutputPackage package = CreateAsyncPipeOutputPackage(processCallback);
+            _registryMediator.AppendPackage(package);
+
+            return this;
+        }
+
+        private PipeOutputPackage CreateAsyncPipeOutputPackage<TSource, TDestination>(
+            Func<TSource, ISemanticBroker, Task<TDestination>> processCallback)
+        {
+            PipeCallback wrappedProcessCallback = async (input, broker) =>
+            {
+                var castedInput = (TSource) input;
+                object result = await processCallback(castedInput, broker);
+                return result;
+            };
+
+            return PipeOutputPackage.Direct(typeof (TSource), typeof (TDestination), wrappedProcessCallback);
         }
 
         private static PipeOutputPackage CreatePipeOutputPackage<TSource, TDestination>(

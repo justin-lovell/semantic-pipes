@@ -59,12 +59,38 @@ namespace SemanticPipes
             // arrange
             var semanticBuilder = new SemanticBuilder();
 
-            Func<TestClassA, ISemanticBroker, TestClassB> processCallback = (a, innerBroker) =>
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>((a, innerBroker) =>
             {
                 Assert.AreSame(expectedTestClassA, a);
                 return expectedTestClassB;
-            };
-            semanticBuilder.InstallPipe(processCallback);
+            });
+            ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
+
+            // act
+            var processedOuput = await semanticBroker.On(expectedTestClassA).Output<TestClassB>();
+
+            // assert
+            Assert.AreSame(expectedTestClassB, processedOuput);
+        }
+
+
+        [Test]
+        public async Task GivenRegistration_WhenTheProcessAsyncDelegateIsCalled_ItShouldExecuteTheSpecifiedGenericCallback()
+        {
+            // pre-arrangement
+            var expectedTestClassA = new TestClassA();
+            var expectedTestClassB = new TestClassB();
+
+            // arrange
+            var semanticBuilder = new SemanticBuilder();
+
+            semanticBuilder.InstallPipe<TestClassA, TestClassB>(async (a, innerBroker) =>
+            {
+                Assert.AreSame(expectedTestClassA, a);
+
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
+                return expectedTestClassB;
+            });
             ISemanticBroker semanticBroker = semanticBuilder.CreateBroker();
 
             // act
