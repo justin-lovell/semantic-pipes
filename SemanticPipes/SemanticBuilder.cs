@@ -22,9 +22,9 @@ namespace SemanticPipes
         public ISemanticBroker CreateBroker()
         {
             var graphEdges = _graphBuilder.FetchShortestPathsBySourceToDestination();
-            var solver = new GraphEdgedSolver(graphEdges);
+            ISolver solver = new GraphEdgedSolver(graphEdges);
 
-            return new Broker(solver);
+            return new Broker(SolverChainFactory.Create(solver));
         }
 
         public SemanticBuilder InstallPipe<TSource, TDestination>(

@@ -22,9 +22,12 @@ namespace SemanticPipes.Registries
             if (IsPackageOfInterest(package.OutputType))
             {
                 Type elementType = package.OutputType.ExtractEnumerableElementType();
-                Type newOutputType = typeof (IEnumerable<>).MakeGenericType(elementType);
 
-                package = PipeOutputPackage.Direct(package.InputType, newOutputType, package.ProcessInput);
+                if (elementType != null)
+                {
+                    Type newOutputType = typeof (IEnumerable<>).MakeGenericType(elementType);
+                    package = PipeOutputPackage.Direct(package.InputType, newOutputType, package.ProcessInput);
+                }
             }
 
             _nextMediator.AppendPackage(package);

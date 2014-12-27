@@ -62,6 +62,8 @@
     <Compile Include="SemanticBuilder.cs" />
     <Compile Include="ShortestPathGraphBuilder.cs" />
     <Compile Include="ISolver.cs" />
+    <Compile Include="SimplifyOutputResolving.cs" />
+    <Compile Include="SolverChainFactory.cs" />
     <Compile Include="TaskEx.cs" />
     <Compile Include="TypeHelperExtensions.cs" />
     <Compile Include="UnexpectedPipePackageOperationException.cs" />
