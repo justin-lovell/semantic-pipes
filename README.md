@@ -12,7 +12,149 @@ NuGet
 
 Example
 -------
-TODO - Need to do a blog post
+Here is a quick start guide in a form of a unit test. The code is written to be read from top down, and the comments describes what is being demonstrated.
+
+Take note that the test will run in about ±1 second, and not n*1sec where n=7 (parallel execution). This is because when the view model pipe scatters the various domain requests as a parallel task. Upon the gather of the `List<PingServerDomainResponse>`, an implicit gather is made. So how about that? Implied parallel processing loops without the programmer thinking about it.
+
+    [TestFixture]
+    public class QuickStart
+    {
+        /*
+         *  These are the typical number of domains which exist
+         *  within your DDD application for a certain command
+         */
+
+        public class PingServerCommandViewModel
+        {
+            public IEnumerable<int> Servers { get; set; }
+        }
+
+        public class PingServerResponseViewModel
+        {
+            public int NumberOfOnlineServers { get; set; }
+            public int NumberOfOfflineServers { get; set; }
+            public IEnumerable<int> OnlineServerInstanceIds { get; set; }
+            public IEnumerable<int> OfflineServerInstanceIds { get; set; }
+        }
+
+        public class PingServerDomainCommand
+        {
+            public int ServerInstanceId { get; set; }
+        }
+
+        public class PingServerDomainResponse
+        {
+            public int ServerInstanceId { get; set; }
+            public bool IsOnline { get; set; }
+        }
+
+        /*
+         * So the incoming request and response are within the application edge.
+         * 
+         * The broker parameter is injected via a DI framework for the UI components,
+         * however, there is nothing stopping you from moving the instance access elsewhere.
+         * 
+         * Also, take note of the Task being returned. Most modern application endpoints support
+         * this kind of notation to assist in the number of concurrent requests that it would
+         * be able to support. This is baked in
+         */
+
+        public Task<PingServerResponseViewModel> PingServers
+            (ISemanticBroker broker, PingServerCommandViewModel command)
+        {
+            return broker.On(command).Output<PingServerResponseViewModel>();
+        }
+
+        /*
+         * Imagine that this is your bootstraping components and creates
+         * a global variable (or enrolls it into a DI framework).
+         * 
+         * For this example, we are going to simulate a request in the method
+         */
+
+        [Test]
+        public async Task BoostrappingStartup()
+        {
+            var builder = new SemanticBuilder();
+
+            // this is where you will scan all the relevant components into
+            // the SemanticBuilder
+            RegisterPipeComponents(builder);
+
+            // after that, capture this instance (thread-safe) somewhere so
+            // that you are able to reuse it with other requests
+            ISemanticBroker broker = builder.CreateBroker();
+
+            // simulate a request/response
+            PingServerResponseViewModel response = await SimulateRequestResponse(broker);
+
+            Assert.AreEqual(3, response.NumberOfOfflineServers);
+            Assert.AreEqual(4, response.NumberOfOnlineServers);
+        }
+
+        private Task<PingServerResponseViewModel> SimulateRequestResponse(ISemanticBroker broker)
+        {
+            var requestModel = new PingServerCommandViewModel
+            {
+                Servers = new[] {1, 4, 7, 10, 11, 12, 20}
+            };
+
+            return PingServers(broker, requestModel);
+        }
+
+        private void RegisterPipeComponents(SemanticBuilder builder)
+        {
+            // logically, in your application, the domain pipes and the
+            // view model pipes will be scattered around the solution
+            RegisterViewModelComponents(builder);
+            RegisterDomainModelComponents(builder);
+        }
+
+        private static void RegisterViewModelComponents(SemanticBuilder builder)
+        {
+            // firstly, our domain model doesn't support bulk queries natively,
+            // so we are going to send them multiple single commands (see the IEnumerable)
+            builder.InstallPipe<PingServerCommandViewModel, IEnumerable<PingServerDomainCommand>>(
+                (model, broker) =>
+                    model.Servers.Select(i => new PingServerDomainCommand {ServerInstanceId = i})
+                );
+
+            // since we know that we scatter the requests out, let's gather them in again
+            // by inverting the IEnumerable (or this case, List - it doesn't matter)
+            builder.InstallPipe<List<PingServerDomainResponse>, PingServerResponseViewModel>
+                ((responses, broker) => new PingServerResponseViewModel()
+                {
+                    NumberOfOfflineServers = responses.Count(x => !x.IsOnline),
+                    NumberOfOnlineServers = responses.Count(x => x.IsOnline),
+                    OfflineServerInstanceIds =
+                        responses.Where(x => !x.IsOnline).Select(x => x.ServerInstanceId),
+                    OnlineServerInstanceIds =
+                        responses.Where(x => x.IsOnline).Select(x => x.ServerInstanceId)
+                });
+        }
+
+        private static void RegisterDomainModelComponents(SemanticBuilder builder)
+        {
+            // this is how the domain requests will come in, one by one.
+            // notice that this pipe is executed asynchronously with the async keyword
+            // being the compiler clue
+            builder.InstallPipe<PingServerDomainCommand, PingServerDomainResponse>(
+                async (command, broker) =>
+                {
+                    // imagine this is a database query or actual ping.
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+
+                    return new PingServerDomainResponse()
+                    {
+                        // spot the odd one out :)
+                        IsOnline = command.ServerInstanceId%2 == 0,
+                        ServerInstanceId = command.ServerInstanceId
+                    };
+                });
+        }
+    }
+
+
 
 Support
 -------
