@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SemanticPipes.Observers;
 using SemanticPipes.Registries;
@@ -8,21 +9,22 @@ namespace SemanticPipes
 {
     public sealed class SemanticBuilder
     {
-        private readonly IRegistryMediator _registryMediator;
-
         private readonly ShortestPathGraphBuilder _graphBuilder;
+        private readonly IRegistryMediator _registryMediator;
 
         public SemanticBuilder()
         {
             _graphBuilder = new ShortestPathGraphBuilder();
 
-            var semanticRegistryObservers = SemanticRegistryObserverFactory.CreateObservers();
+            IEnumerable<ISemanticRegistryObserver> semanticRegistryObservers =
+                SemanticRegistryObserverFactory.CreateObservers();
             _registryMediator = RegistryMediatorFactory.Create(semanticRegistryObservers, _graphBuilder);
         }
 
         public ISemanticBroker CreateBroker()
         {
-            var graphEdges = _graphBuilder.FetchShortestPathsBySourceToDestination();
+            IEnumerable<KeyValuePair<Tuple<Type, Type>, PipeOutputPackage>> graphEdges =
+                _graphBuilder.FetchShortestPathsBySourceToDestination();
             return new Broker(SolverChainFactory.Create(graphEdges));
         }
 
@@ -54,7 +56,7 @@ namespace SemanticPipes
             return this;
         }
 
-        private PipeOutputPackage CreateAsyncPipeOutputPackage<TSource, TDestination>(
+        private static PipeOutputPackage CreateAsyncPipeOutputPackage<TSource, TDestination>(
             Func<TSource, ISemanticBroker, Task<TDestination>> processCallback)
         {
             PipeCallback wrappedProcessCallback = (input, broker) =>
